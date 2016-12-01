@@ -34,7 +34,7 @@ export interface Comment {
     createdAt: moment.Moment;
 }
 
-interface AppState {
+interface ApplicationState {
     locationStatus: LocationStatus;
     position: Position | null;
     messages: Message[];
@@ -42,7 +42,7 @@ interface AppState {
     singleMessageId: number | null;
 }
 
-export default class App extends React.Component<{}, AppState> {
+export default class Application extends React.Component<{}, ApplicationState> {
     watchID: number;
 
     constructor() {

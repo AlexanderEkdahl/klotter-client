@@ -1,6 +1,6 @@
 import * as React from "react";
 import ReactMapboxGl, { Popup, Feature, GeoJSONLayer } from "react-mapbox-gl";
-import { Message } from "./App";
+import { Message } from "./Application";
 import haversine from "../haversine";
 
 interface MapProps {

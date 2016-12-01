@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import App from "./components/App";
+import Application from "./components/Application";
 
 import "whatwg-fetch";
 
 ReactDOM.render(
-    <App />,
+    <Application />,
     document.getElementById("app")
 );

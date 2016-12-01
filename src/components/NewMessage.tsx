@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Message } from "./App";
+import { Message } from "./Application";
 import * as moment from "moment";
 import haversine from "../haversine";
 

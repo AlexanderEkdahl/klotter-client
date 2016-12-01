@@ -3,7 +3,7 @@ import Map from "./Map";
 import MessageList from "./MessageList";
 import NewMessage from "./NewMessage";
 import SingleMessageWithComments from "./SingleMessageWithComments";
-import { Message, Navigation } from "./App";
+import { Message, Navigation } from "./Application";
 
 interface MessagesProps {
     latitude: number;
