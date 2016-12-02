@@ -5,6 +5,12 @@ import mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
 
 mapboxgl.accessToken = "pk.eyJ1IjoiYWxleGFuZGVyZWtkYWhsIiwiYSI6ImNpdW1uenBjbzAwMGsyemw4NjBpaDhrdXMifQ.2tN8BK3jrFZS80KyFWqyHw";
 
+const css = require<string>("mapbox-gl/dist/mapbox-gl.css");
+const head = (document.head || document.getElementsByTagName("head")[0]);
+const styleElement = document.createElement('style');
+styleElement.innerHTML = css;
+head.appendChild(styleElement);
+
 interface MapProps {
     latitude: number;
     longitude: number;
@@ -83,7 +89,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
     }
 
     onMapLoad() {
-        this.map.addSource('circle', createGeoJSONCircle(this.state.longitude, this.state.latitude, 0.2));
+        this.map.addSource('circle', createGeoJSONCircle(this.state.longitude, this.state.latitude, 0.1));
         this.map.addLayer({
             id: 'circle',
             type: 'fill',
@@ -94,6 +100,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
                 'fill-opacity': 0.15
             }
         });
+
         this.map.addSource('circles', createGeoJSONCircles(this.props.messages));
         this.map.addLayer({
             id: 'circles',
@@ -103,6 +110,20 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
                 'circle-color': "#F00",
             }
         });
+
+        for (var i = 0; i < this.props.messages.length; i++) {
+            const message = this.props.messages[i];
+            if (haversine(this.state.latitude, this.state.longitude, message.latitude, message.longitude) < 100) {
+                var el = document.createElement('div');
+                el.innerText = message.content;
+                el.addEventListener("click", () => { this.props.messageView(message); })
+
+                var popup = new mapboxgl.Popup({closeOnClick: false, closeButton: false})
+                    .setLngLat([message.longitude, message.latitude])
+                    .setDOMContent(el)
+                    .addTo(this.map);
+            }
+        }
     }
 
     componentDidMount() {

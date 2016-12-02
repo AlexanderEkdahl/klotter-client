@@ -16,7 +16,7 @@ export default class MessageList extends React.Component<MessageListProps, {}> {
         const messagesMarkup = this.props.messages.map((message, i) => {
             const distance = haversine(this.props.latitude, this.props.longitude, message.latitude, message.longitude);
 
-            if (distance < 200) {
+            if (distance < 100) {
                 return (
                     <div key={i} onClick={() => { this.props.messageView(message); } }>
                         <SingleMessage message={message} distance={distance} />
