@@ -72,7 +72,10 @@ function createGeoJSONCircles(messages: Message[]): mapboxgl.GeoJSONSourceRaw {
         data: {
             type: "FeatureCollection",
             features: features
-        }
+        },
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 30,
     }
 }
 
@@ -101,13 +104,61 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
             }
         });
 
-        this.map.addSource('circles', createGeoJSONCircles(this.props.messages));
+        this.map.addSource('messages', createGeoJSONCircles(this.props.messages));
         this.map.addLayer({
-            id: 'circles',
+            id: 'messages-unclustered-border',
             type: 'circle',
-            source: 'circles',
+            source: 'messages',
             paint: {
-                'circle-color': "#F00",
+                "circle-color": "#D60000",
+                "circle-radius": 7,
+            },
+            filter: ["!has", "point_count"],
+        });
+        this.map.addLayer({
+            id: 'messages-unclustered',
+            type: 'circle',
+            source: 'messages',
+            paint: {
+                "circle-color": "#F00",
+                "circle-radius": 6,
+            },
+            filter: ["!has", "point_count"],
+        });
+        this.map.addLayer({
+            id: 'messages-clustered-border',
+            type: 'circle',
+            source: 'messages',
+            paint: {
+                "circle-color": "#D60000",
+                "circle-radius": 17,
+            },
+            filter: [">=", "point_count", 0],
+        });
+        this.map.addLayer({
+            id: 'messages-clustered',
+            type: 'circle',
+            source: 'messages',
+            paint: {
+                "circle-color": "#F00",
+                "circle-radius": 16,
+            },
+            filter: [">=", "point_count", 0],
+        });
+        this.map.addLayer({
+            id: "messages-count",
+            type: "symbol",
+            source: "messages",
+            layout: {
+                "text-field": "{point_count}",
+                "text-font": [
+                    "DIN Offc Pro Medium",
+                    "Arial Unicode MS Bold"
+                ],
+                "text-size": 16
+            } as mapboxgl.SymbolLayout,
+            paint: {
+                "text-color": "#fff",
             }
         });
 
