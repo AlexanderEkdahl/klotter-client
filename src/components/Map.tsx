@@ -74,8 +74,8 @@ function createGeoJSONCircles(messages: Message[]): mapboxgl.GeoJSONSourceRaw {
             features: features
         },
         cluster: true,
-        clusterMaxZoom: 14,
-        clusterRadius: 30,
+        clusterMaxZoom: 13,
+        clusterRadius: 25,
     }
 }
 
@@ -111,7 +111,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
             source: 'messages',
             paint: {
                 "circle-color": "#D60000",
-                "circle-radius": 7,
+                "circle-radius": 6,
             },
             filter: ["!has", "point_count"],
         });
@@ -121,7 +121,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
             source: 'messages',
             paint: {
                 "circle-color": "#F00",
-                "circle-radius": 6,
+                "circle-radius": 5,
             },
             filter: ["!has", "point_count"],
         });
