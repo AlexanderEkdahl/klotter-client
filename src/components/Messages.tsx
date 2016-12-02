@@ -1,5 +1,5 @@
 import * as React from "react";
-import Map from "./Map";
+import MapComponent from "./Map";
 import MessageList from "./MessageList";
 import NewMessage from "./NewMessage";
 import SingleMessageWithComments from "./SingleMessageWithComments";
@@ -23,7 +23,7 @@ export default class Messages extends React.Component<MessagesProps, {}> {
         let main;
 
         if (this.props.navigation === Navigation.Map) {
-            main = <Map messageView={this.props.messageView} messages={this.props.messages} longitude={this.props.longitude} latitude={this.props.latitude} />;
+            main = <MapComponent messageView={this.props.messageView} messages={this.props.messages} longitude={this.props.longitude} latitude={this.props.latitude} />;
         } else if (this.props.navigation === Navigation.List) {
             main = <MessageList messageView={this.props.messageView} messages={this.props.messages} longitude={this.props.longitude} latitude={this.props.latitude} />;
         } else if (this.props.navigation === Navigation.NewMessage) {
@@ -66,6 +66,7 @@ const styles = {
     },
 
     nav: {
+        flexShrink: 0,
         display: "flex",
         justifyContent: spaceBetween,
         alignItems: "center",
@@ -78,5 +79,6 @@ const styles = {
 
     main: {
         flex: 1,
+        height: "100%",
     }
 };

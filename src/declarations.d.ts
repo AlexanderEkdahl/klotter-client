@@ -4,4 +4,6 @@ declare var require: {
     ensure: (paths: string[], callback: (require: <T>(path: string) => T) => void) => void;
 };
 
-declare module "react-mapbox-gl";
+declare module 'mapbox-gl/dist/mapbox-gl.js' {
+	export = mapboxgl;
+}

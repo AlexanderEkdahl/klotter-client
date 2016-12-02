@@ -5,12 +5,13 @@
   "scripts": {
     "dist": "webpack",
     "lint": "tslint 'src/**/*.tsx' --fix",
-    "dev": "webpack-dev-server"
+    "dev": "webpack-dev-server --https"
   },
   "author": "Alexander Ekdahl",
   "license": "ISC",
   "dependencies": {
     "@types/immutability-helper": "^2.0.15",
+    "@types/mapbox-gl": "^0.27.0",
     "@types/moment": "^2.13.0",
     "@types/react": "^0.14.50",
     "@types/react-dom": "^0.14.19",
@@ -19,10 +20,10 @@
     "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.22.0",
     "immutability-helper": "^2.0.0",
+    "mapbox-gl": "^0.28.0",
     "moment": "^2.17.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
-    "react-mapbox-gl": "^0.18.0",
     "source-map-loader": "^0.1.5",
     "ts-loader": "^1.2.2",
     "tslint": "^4.0.2",
