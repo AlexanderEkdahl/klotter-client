@@ -24,9 +24,7 @@ interface MapState {
     longitude: number;
 }
 
-function createGeoJSONCircle(longitude, latitude, radiusInKm: number, points = 64): mapboxgl.GeoJSONSourceRaw {
-    let km = radiusInKm;
-
+function createGeoJSONCirclePolygon(longitude, latitude, km: number, points = 64): mapboxgl.GeoJSONSourceRaw {
     let ret: [number, number][] = [];
     let distanceX = km / (111.320 * Math.cos(latitude * Math.PI / 180));
     let distanceY = km / 110.574;
@@ -213,7 +211,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
     }
 
     onMapLoad() {
-        this.map.addSource("circle", createGeoJSONCircle(this.state.longitude, this.state.latitude, 0.1));
+        this.map.addSource("circle", createGeoJSONCirclePolygon(this.state.longitude, this.state.latitude, 0.1));
         this.map.addLayer({
             id: "circle",
             type: "fill",
