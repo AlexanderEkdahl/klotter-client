@@ -32,7 +32,6 @@ export default class SingleMessage extends React.Component<SingleMessageProps, {
     }
 }
 
-const spaceBetween: "space-between" = "space-between"; // TypeScript bug
 export const styles = {
     message: {
         color: "white",
@@ -47,9 +46,9 @@ export const styles = {
     },
 
     footer: {
-        justifyContent: spaceBetween,
+        justifyContent: "space-between",
         fontSize: 14,
         display: "flex",
         marginTop: 8,
-    },
+    } as React.CSSProperties,
 };

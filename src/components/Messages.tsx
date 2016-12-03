@@ -57,7 +57,6 @@ export default class Messages extends React.Component<MessagesProps, {}> {
     }
 }
 
-const spaceBetween: "space-between" = "space-between"; // TypeScript bug
 const styles = {
     container: {
         display: "flex",
@@ -68,14 +67,14 @@ const styles = {
     nav: {
         flexShrink: 0,
         display: "flex",
-        justifyContent: spaceBetween,
+        justifyContent: "space-between",
         alignItems: "center",
         color: "#FF0000",
         fontSize: 20,
         padding: 12,
         cursor: "pointer",
         textShadow: "1px 1px 0px rgba(0, 0, 0, 0.2)"
-    },
+    } as React.CSSProperties,
 
     main: {
         flex: 1,
