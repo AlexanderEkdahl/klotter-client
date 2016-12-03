@@ -13,7 +13,7 @@ interface MessagesProps {
     navigation: Navigation;
     switchView: () => void;
     newMessageView: () => void;
-    messageView: (message: Message) => void;
+    messageView: (messageId: number) => void;
     onMessageSubmit: (value: string) => void;
     onCommentSubmit: (value: string, messageId: number) => void;
 }

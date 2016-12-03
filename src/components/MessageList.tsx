@@ -8,7 +8,7 @@ interface MessageListProps {
     latitude: number;
     longitude: number;
     messages: Message[];
-    messageView: (message: Message) => void;
+    messageView: (messageId: number) => void;
 }
 
 export default class MessageList extends React.Component<MessageListProps, {}> {
@@ -18,7 +18,7 @@ export default class MessageList extends React.Component<MessageListProps, {}> {
 
             if (distance < 100) {
                 return (
-                    <div key={i} onClick={() => { this.props.messageView(message); } }>
+                    <div key={i} onClick={() => { this.props.messageView(message.id); } }>
                         <SingleMessage message={message} distance={distance} />
                     </div>
                 );

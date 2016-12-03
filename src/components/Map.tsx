@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Message } from "./Application";
 import haversine from "../haversine";
-import mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
+import mapboxgl = require("mapbox-gl/dist/mapbox-gl.js");
+import { render, unmountComponentAtNode } from "react-dom";
 
 mapboxgl.accessToken = "pk.eyJ1IjoiYWxleGFuZGVyZWtkYWhsIiwiYSI6ImNpdW1uenBjbzAwMGsyemw4NjBpaDhrdXMifQ.2tN8BK3jrFZS80KyFWqyHw";
 
 const css = require<string>("mapbox-gl/dist/mapbox-gl.css");
 const head = (document.head || document.getElementsByTagName("head")[0]);
-const styleElement = document.createElement('style');
+const styleElement = document.createElement("style");
 styleElement.innerHTML = css;
 head.appendChild(styleElement);
 
@@ -15,7 +16,7 @@ interface MapProps {
     latitude: number;
     longitude: number;
     messages: Message[];
-    messageView: (message: Message) => void;
+    messageView: (messageId: number) => void;
 }
 
 interface MapState {
@@ -47,37 +48,13 @@ function createGeoJSONCircle(longitude, latitude, radiusInKm: number, points = 6
             type: "Polygon",
             coordinates: [ret],
         }
-    }
+    };
 
     return {
         type: "geojson",
         data: feature
-    }
+    };
 };
-
-function createGeoJSONCircles(messages: Message[]): mapboxgl.GeoJSONSourceRaw {
-    const features = messages.map((message): GeoJSON.Feature<GeoJSON.Point> => {
-        return {
-            type: "Feature",
-            geometry: {
-                type: "Point",
-                coordinates: [message.longitude, message.latitude]
-            },
-            properties: {}
-        };
-    });
-
-    return {
-        type: "geojson",
-        data: {
-            type: "FeatureCollection",
-            features: features
-        },
-        cluster: true,
-        clusterMaxZoom: 13,
-        clusterRadius: 25,
-    }
-}
 
 export default class MapComponent extends React.Component<MapProps, MapState> {
     mapContainer: HTMLDivElement;
@@ -91,44 +68,99 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
         };
     }
 
-    onMapLoad() {
-        this.map.addSource('circle', createGeoJSONCircle(this.state.longitude, this.state.latitude, 0.1));
-        this.map.addLayer({
-            id: 'circle',
-            type: 'fill',
-            source: 'circle',
-            layout: {},
-            paint: {
-                'fill-color': '#088',
-                'fill-opacity': 0.15
-            }
+    createGeoJSONMessages(): mapboxgl.GeoJSONSourceRaw {
+        const features = this.props.messages.map((message): GeoJSON.Feature<GeoJSON.Point> => {
+            return {
+                type: "Feature",
+                geometry: {
+                    type: "Point",
+                    coordinates: [message.longitude, message.latitude]
+                },
+                properties: {
+                    id: message.id,
+                    title: message.content,
+                    distance: haversine(this.state.latitude, this.state.longitude, message.latitude, message.longitude)
+                }
+            };
         });
 
-        this.map.addSource('messages', createGeoJSONCircles(this.props.messages));
+        return {
+            type: "geojson",
+            data: {
+                type: "FeatureCollection",
+                features: features
+            },
+            cluster: true,
+            clusterMaxZoom: 13,
+            clusterRadius: 25,
+        };
+    }
+
+    renderMessages() {
+        const sourceId = "messages";
+
+        this.map.addSource(sourceId, this.createGeoJSONMessages());
+
+        // Nearby messages
         this.map.addLayer({
-            id: 'messages-unclustered-border',
-            type: 'circle',
-            source: 'messages',
+            id: "messages-nearby-label",
+            type: "symbol",
+            source: sourceId,
+            layout: {
+                "text-field": "{title}",
+                "text-size": 11,
+                "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                "text-anchor": "bottom",
+                "text-offset": [0, -0.8],
+            } as mapboxgl.SymbolLayout,
+            filter: ["<", "distance", 100],
+        });
+        this.map.addLayer({
+            id: "messages-nearby-border",
+            type: "circle",
+            source: sourceId,
+            paint: {
+                "circle-color": "#00D600",
+                "circle-radius": 9,
+            },
+            filter: ["<", "distance", 100],
+        });
+        this.map.addLayer({
+            id: "messages-nearby",
+            type: "circle",
+            source: sourceId,
+            paint: {
+                "circle-color": "#00FF00",
+                "circle-radius": 8,
+            },
+            filter: ["<", "distance", 100],
+        });
+
+        // Distant messages
+        this.map.addLayer({
+            id: "messages-unclustered-border",
+            type: "circle",
+            source: sourceId,
             paint: {
                 "circle-color": "#D60000",
                 "circle-radius": 6,
             },
-            filter: ["!has", "point_count"],
+            filter: ["all", ["!has", "point_count"], [">=", "distance", 100]],
         });
         this.map.addLayer({
-            id: 'messages-unclustered',
-            type: 'circle',
-            source: 'messages',
+            id: "messages-unclustered",
+            type: "circle",
+            source: sourceId,
             paint: {
                 "circle-color": "#F00",
                 "circle-radius": 5,
             },
-            filter: ["!has", "point_count"],
+            filter: ["all", ["!has", "point_count"], [">=", "distance", 100]],
         });
         this.map.addLayer({
-            id: 'messages-clustered-border',
-            type: 'circle',
-            source: 'messages',
+            id: "messages-clustered-border",
+            type: "circle",
+            source: sourceId,
             paint: {
                 "circle-color": "#D60000",
                 "circle-radius": 17,
@@ -136,9 +168,9 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
             filter: [">=", "point_count", 0],
         });
         this.map.addLayer({
-            id: 'messages-clustered',
-            type: 'circle',
-            source: 'messages',
+            id: "messages-clustered",
+            type: "circle",
+            source: sourceId,
             paint: {
                 "circle-color": "#F00",
                 "circle-radius": 16,
@@ -148,44 +180,65 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
         this.map.addLayer({
             id: "messages-count",
             type: "symbol",
-            source: "messages",
+            source: sourceId,
             layout: {
                 "text-field": "{point_count}",
-                "text-font": [
-                    "DIN Offc Pro Medium",
-                    "Arial Unicode MS Bold"
-                ],
+                "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
                 "text-size": 16
             } as mapboxgl.SymbolLayout,
             paint: {
                 "text-color": "#fff",
             }
         });
+    }
 
-        for (var i = 0; i < this.props.messages.length; i++) {
-            const message = this.props.messages[i];
-            if (haversine(this.state.latitude, this.state.longitude, message.latitude, message.longitude) < 100) {
-                var el = document.createElement('div');
-                el.innerText = message.content;
-                el.addEventListener("click", () => { this.props.messageView(message); })
+    onMapClick(e) {
+        let features = this.map.queryRenderedFeatures(e.point, { layers: ["messages-nearby"] });
 
-                var popup = new mapboxgl.Popup({closeOnClick: false, closeButton: false})
-                    .setLngLat([message.longitude, message.latitude])
-                    .setDOMContent(el)
-                    .addTo(this.map);
-            }
+        if (!features.length) {
+            return;
         }
+
+        let feature = features[0];
+        const el = document.createElement("div");
+        render(<span onClick={() => { this.props.messageView(feature.properties.id);}}>
+            {feature.properties.title}
+        </span>, el);
+
+        let popup = new mapboxgl.Popup({ closeButton: false })
+            .setLngLat(feature.geometry.coordinates)
+            .setDOMContent(el)
+            .on("close", () => { unmountComponentAtNode(el); })
+            .addTo(this.map);
+    }
+
+    onMapLoad() {
+        this.map.addSource("circle", createGeoJSONCircle(this.state.longitude, this.state.latitude, 0.1));
+        this.map.addLayer({
+            id: "circle",
+            type: "fill",
+            source: "circle",
+            layout: {},
+            paint: {
+                "fill-color": "#088",
+                "fill-opacity": 0.15
+            }
+        });
+
+        this.renderMessages();
+
+        this.map.on("click", this.onMapClick.bind(this));
     }
 
     componentDidMount() {
         this.map = new mapboxgl.Map({
-            container: this.mapContainer, // container id
-            style: 'mapbox://styles/mapbox/streets-v10', //stylesheet location
-            center: [this.state.longitude, this.state.latitude], // starting position
-            zoom: 16 // starting zoom
+            container: this.mapContainer,
+            style: "mapbox://styles/mapbox/streets-v10",
+            center: [this.state.longitude, this.state.latitude],
+            zoom: 16
         });
 
-        this.map.on('load', this.onMapLoad.bind(this));
+        this.map.on("load", this.onMapLoad.bind(this));
     }
 
     componentWillUnmount() {
@@ -193,37 +246,6 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
     }
 
     render() {
-        return <div ref={(div) => { this.mapContainer = div; } }></div>
-        // const visiblePopups = this.props.messages.map((message, i) => {
-        //     if (haversine(this.state.latitude, this.state.longitude, message.latitude, message.longitude) < 100) {
-        //         return (
-        //             <Popup key={i} coordinates={[message.longitude, message.latitude]}>
-        //                 <div onClick={() => { this.props.messageView(message); } }>
-        //                     {message.content}
-        //                 </div>
-        //             </Popup>
-        //         );
-        //     }
-        // });
-
-        // {visiblePopups}
-        // <GeoJSONLayer
-        //     data={createGeoJSONCircle(this.state.longitude, this.state.latitude, 0.1)}
-        //     symbolLayout={{
-        //         "visibility": "none",
-        //     }}
-        //     fillPaint={{
-        //         "fill-color": "blue",
-        //         "fill-opacity": 0.3
-        //     }} />
-        // <GeoJSONLayer data={createGeoJSONCircles(this.props.messages)} />
-        // return (
-        //     <ReactMapboxGl
-        //         style="mapbox://styles/mapbox/streets-v10"
-        //         accessToken="pk.eyJ1IjoiYWxleGFuZGVyZWtkYWhsIiwiYSI6ImNpdW1uenBjbzAwMGsyemw4NjBpaDhrdXMifQ.2tN8BK3jrFZS80KyFWqyHw"
-        //         center={[this.state.longitude, this.state.latitude]}
-        //         zoom={[16]}>
-        //     </ReactMapboxGl>
-        // );
+        return <div ref={(div) => { this.mapContainer = div; } }></div>;
     }
 }

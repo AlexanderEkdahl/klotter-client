@@ -220,13 +220,13 @@ export default class Application extends React.Component<{}, ApplicationState> {
         });
     }
 
-    messageView(message: Message) {
+    messageView(messageId: number) {
         this.setState({
             locationStatus: this.state.locationStatus,
             position: this.state.position,
             messages: this.state.messages,
             navigation: Navigation.Message,
-            singleMessageId: message.id,
+            singleMessageId: messageId,
         });
     }
 
