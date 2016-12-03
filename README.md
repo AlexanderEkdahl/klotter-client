@@ -1,15 +1,9 @@
 # Klotter Client
 
-## Contents
-
-- React
-- TypeScript
-- Webpack
-
 ## Dependencies
 
-- Node
-- Yarn
+- [Node.js](https://nodejs.org)
+- [Yarn](https://yarnpkg.com)
 
 ## Getting stared
 
