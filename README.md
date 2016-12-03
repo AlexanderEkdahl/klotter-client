@@ -1,6 +1,4 @@
-# react-boilerplate
-
-Simple starting point for TypeScript and React.
+# Klotter Client
 
 ## Contents
 
