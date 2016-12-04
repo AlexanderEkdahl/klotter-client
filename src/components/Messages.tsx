@@ -4,7 +4,6 @@ import MessageList from "./MessageList";
 import NewMessage from "./NewMessage";
 import SingleMessageWithComments from "./SingleMessageWithComments";
 import { Message } from "./Application";
-import GoBackButton from './buttons/goBackButton'
 import { Navigation } from "../routes";
 
 interface MessagesProps {
