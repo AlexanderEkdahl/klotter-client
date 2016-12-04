@@ -3,6 +3,7 @@ import Messages from "./Messages";
 import * as moment from "moment";
 import * as update from "immutability-helper";
 import { Navigation } from "../routes";
+import { Message, Comment } from "../models";
 
 const logo = require<string>("./logo.png");
 
@@ -13,27 +14,30 @@ const enum LocationStatus {
   Failed,
 }
 
-export interface Message {
-  id: number;
-  content: string;
-  createdAt: moment.Moment;
-  latitude: number;
-  longitude: number;
-  comments: Comment[];
-}
-
-export interface Comment {
-  id: number;
-  content: string;
-  createdAt: moment.Moment;
-}
-
 interface ApplicationState {
   locationStatus: LocationStatus;
   position: Position | null;
   messages: Message[];
+  userMessages: Message[];
   navigation: Navigation;
   prevNavigation: Navigation | null;
+  userId: string;
+}
+
+function userId(): string {
+  let id = localStorage.getItem("user_id");
+
+  if (id == null) {
+    id = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (let i = 0; i < 20; i++)
+      id += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  localStorage.setItem("user_id", id);
+
+  return id;
 }
 
 export default class Application extends React.Component<{}, ApplicationState> {
@@ -46,30 +50,36 @@ export default class Application extends React.Component<{}, ApplicationState> {
       locationStatus: LocationStatus.Initializing,
       position: null,
       messages: [],
+      userMessages: [],
       navigation: { id: "map" },
       prevNavigation: null,
+      userId: userId(),
     };
   }
 
   componentDidMount() {
     if ("geolocation" in navigator) {
       this.watchID = navigator.geolocation.watchPosition((position) => {
-        this.fetchMessages(position).then((messages) => {
+        Promise.all([this.fetchMessages(position), this.fetchUserMessages(this.state.userId)]).then((messages) => {
           this.setState({
             locationStatus: LocationStatus.Watching,
             position: position,
-            messages: messages,
+            messages: messages[0],
+            userMessages: messages[1],
             navigation: this.state.navigation,
             prevNavigation: this.state.prevNavigation,
+            userId: this.state.userId,
           });
         });
       }, () => {
         this.setState({
           locationStatus: LocationStatus.Failed,
           position: null,
-          messages: [],
+          messages: this.state.messages,
+          userMessages: this.state.userMessages,
           navigation: this.state.navigation,
           prevNavigation: this.state.prevNavigation,
+          userId: this.state.userId,
         });
       });
     } else {
@@ -77,8 +87,10 @@ export default class Application extends React.Component<{}, ApplicationState> {
         locationStatus: LocationStatus.Unavailable,
         position: null,
         messages: [],
+        userMessages: this.state.userMessages,
         navigation: this.state.navigation,
         prevNavigation: this.state.prevNavigation,
+        userId: this.state.userId,
       });
     }
   }
@@ -112,12 +124,42 @@ export default class Application extends React.Component<{}, ApplicationState> {
     });
   }
 
+  fetchUserMessages(user_id: string): Promise<Message[]> {
+    const url = `https://klottr.ekdahl.io/get_user?user_id=${user_id}`;
+
+    return new Promise<Message[]>((resolve, reject) => {
+      fetch(url).then((response) => {
+        return response.json();
+      }).then((json: any) => {
+        const messages = json.map((message) => {
+          return {
+            id: message.id,
+            content: message.message,
+            createdAt: moment(message.created_at),
+            latitude: message.y,
+            longitude: message.x,
+            comments: message.Comments.map((comment) => {
+              return {
+                id: comment.id,
+                content: comment.content,
+                createdAt: moment(comment.created_at),
+              };
+            })
+          };
+        });
+
+        resolve(messages);
+      });
+    });
+  }
+
   onMessageSubmit(value) {
     const url = `https://klottr.ekdahl.io/post`;
     const data = {
-      "message": value,
-      "x": this.state.position!.coords.longitude,
-      "y": this.state.position!.coords.latitude
+      message: value,
+      x: this.state.position!.coords.longitude,
+      y: this.state.position!.coords.latitude,
+      user_id: this.state.userId,
     };
 
     fetch(url, {
@@ -137,14 +179,17 @@ export default class Application extends React.Component<{}, ApplicationState> {
         longitude: json.x,
         comments: [],
       };
-      const newMessages = this.state.messages.concat([message]);
+      const newMessages = [message].concat(this.state.messages);
+      const newUserMessages = [message].concat(this.state.userMessages);
 
       this.setState({
         locationStatus: this.state.locationStatus,
         position: this.state.position,
         messages: newMessages,
+        userMessages: newUserMessages,
         navigation: { id: "list" },
         prevNavigation: this.state.navigation,
+        userId: this.state.userId,
       });
     });
   }
@@ -152,8 +197,9 @@ export default class Application extends React.Component<{}, ApplicationState> {
   onCommentSubmit(value: string, messageId: number) {
     const url = `https://klottr.ekdahl.io/post_comment`;
     const data = {
-      "content": value,
-      "message_id": messageId,
+      content: value,
+      message_id: messageId,
+      user_id: this.state.userId,
     };
 
     fetch(url, {
@@ -176,12 +222,20 @@ export default class Application extends React.Component<{}, ApplicationState> {
       const command = {};
       command[messageIndex] = { comments: { $set: newComments } };
       const newMessages = update(this.state.messages, command);
+
+      let newUserMessages = this.state.userMessages;
+      if (typeof this.state.userMessages.find((x) => x.id === this.state.messages[messageIndex].id) === "undefined") {
+        newUserMessages = [this.state.messages[messageIndex]].concat(this.state.userMessages);
+      }
+
       this.setState({
         locationStatus: this.state.locationStatus,
         position: this.state.position,
         messages: newMessages,
+        userMessages: newUserMessages,
         navigation: this.state.navigation,
         prevNavigation: this.state.prevNavigation,
+        userId: this.state.userId,
       });
     });
   }
@@ -191,8 +245,10 @@ export default class Application extends React.Component<{}, ApplicationState> {
       locationStatus: this.state.locationStatus,
       position: this.state.position,
       messages: this.state.messages,
+      userMessages: this.state.userMessages,
       navigation: newNavigation,
       prevNavigation: this.state.navigation,
+      userId: this.state.userId,
     });
   }
 
@@ -206,6 +262,8 @@ export default class Application extends React.Component<{}, ApplicationState> {
           navigation={this.state.navigation}
           prevNavigation={this.state.prevNavigation}
           messages={this.state.messages}
+          userMessages={this.state.userMessages}
+          userId={this.state.userId}
           longitude={this.state.position!.coords.longitude}
           latitude={this.state.position!.coords.latitude} />
       );
@@ -229,15 +287,14 @@ export default class Application extends React.Component<{}, ApplicationState> {
   }
 }
 
-const center: "center" = "center"; // dumb hack to satisfy Typescript
 const styles = {
   splash: {
     height: "100%",
     background: "linear-gradient(to bottom right, #f33, #c09)",
     display: "flex",
-    justifyContent: center,
+    justifyContent: "center",
     alignItems: "center",
-  },
+  } as React.CSSProperties,
 
   img: {
     display: "block",

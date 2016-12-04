@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Message } from "./Application";
+import { Message } from "../models";
 import haversine from "../haversine";
 import mapboxgl = require("mapbox-gl/dist/mapbox-gl.js");
 import { render, unmountComponentAtNode } from "react-dom";

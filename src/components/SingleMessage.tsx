@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Message } from "./Application";
+import { Message } from "../models";
 import * as moment from "moment";
 
 interface SingleMessageProps {

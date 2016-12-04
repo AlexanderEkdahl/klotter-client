@@ -1,17 +1,25 @@
 export interface Map {
-	id: "map";
-}
-export interface List {
-	id: "list";
-}
-export interface Message {
-	id: "message";
-	messageId: number;
-	prev: Navigation;
-}
-export interface NewMessage {
-	id: "new_message";
-	prev: Navigation;
+  id: "map";
 }
 
-export type Navigation = Map | List | Message | NewMessage;
+export interface List {
+  id: "list";
+}
+
+export interface Message {
+  id: "message";
+  messageId: number;
+  prev: Navigation;
+}
+
+export interface NewMessage {
+  id: "new_message";
+  prev: Navigation;
+}
+
+export interface User {
+  id: "user";
+  prev: Navigation;
+}
+
+export type Navigation = Map | List | Message | NewMessage | User;
