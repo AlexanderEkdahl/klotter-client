@@ -5,6 +5,6 @@ import Application from "./components/Application";
 import "whatwg-fetch";
 
 ReactDOM.render(
-    <Application />,
-    document.getElementById("app")
+  <Application />,
+  document.getElementById("app")
 );
