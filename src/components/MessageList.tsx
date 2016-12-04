@@ -5,30 +5,30 @@ import haversine from "../haversine";
 import SingleMessage from "./SingleMessage";
 
 interface MessageListProps {
-    latitude: number;
-    longitude: number;
-    messages: Message[];
-    messageView: (messageId: number) => void;
+  latitude: number;
+  longitude: number;
+  messages: Message[];
+  messageView: (messageId: number) => void;
 }
 
 export default class MessageList extends React.Component<MessageListProps, {}> {
-    render() {
-        const messagesMarkup = this.props.messages.map((message, i) => {
-            const distance = haversine(this.props.latitude, this.props.longitude, message.latitude, message.longitude);
+  render() {
+    const messagesMarkup = this.props.messages.map((message, i) => {
+      const distance = haversine(this.props.latitude, this.props.longitude, message.latitude, message.longitude);
 
-            if (distance < 100) {
-                return (
-                    <div key={i} onClick={() => { this.props.messageView(message.id); } }>
-                        <SingleMessage message={message} distance={distance} />
-                    </div>
-                );
-            }
-        });
-
+      if (distance < 100) {
         return (
-            <div>
-                {messagesMarkup}
-            </div>
+          <div key={i} onClick={() => { this.props.messageView(message.id); } }>
+            <SingleMessage message={message} distance={distance} />
+          </div>
         );
-    }
+      }
+    });
+
+    return (
+      <div>
+        {messagesMarkup}
+      </div>
+    );
+  }
 }

@@ -2,6 +2,7 @@ import * as React from "react";
 import Messages from "./Messages";
 import * as moment from "moment";
 import * as update from "immutability-helper";
+import { Navigation } from "../routes";
 
 const logo = require<string>("./logo.png");
 
@@ -10,13 +11,6 @@ const enum LocationStatus {
   Watching,
   Unavailable,
   Failed,
-}
-
-export const enum Navigation {
-  Map,
-  NewMessage,
-  List,
-  Message,
 }
 
 export interface Message {
@@ -39,7 +33,7 @@ interface ApplicationState {
   position: Position | null;
   messages: Message[];
   navigation: Navigation;
-  singleMessageId: number | null;
+  prevNavigation: Navigation | null;
 }
 
 export default class Application extends React.Component<{}, ApplicationState> {
@@ -52,8 +46,8 @@ export default class Application extends React.Component<{}, ApplicationState> {
       locationStatus: LocationStatus.Initializing,
       position: null,
       messages: [],
-      navigation: Navigation.List,
-      singleMessageId: null,
+      navigation: { id: "map" },
+      prevNavigation: null,
     };
   }
 
@@ -66,7 +60,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
             position: position,
             messages: messages,
             navigation: this.state.navigation,
-            singleMessageId: this.state.singleMessageId,
+            prevNavigation: this.state.prevNavigation,
           });
         });
       }, () => {
@@ -75,7 +69,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
           position: null,
           messages: [],
           navigation: this.state.navigation,
-          singleMessageId: this.state.singleMessageId,
+          prevNavigation: this.state.prevNavigation,
         });
       });
     } else {
@@ -84,7 +78,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
         position: null,
         messages: [],
         navigation: this.state.navigation,
-        singleMessageId: this.state.singleMessageId,
+        prevNavigation: this.state.prevNavigation,
       });
     }
   }
@@ -115,34 +109,6 @@ export default class Application extends React.Component<{}, ApplicationState> {
 
         resolve(messages);
       });
-    });
-  }
-
-  switchView() {
-    let newLocation: Navigation;
-
-    if (this.state.navigation === Navigation.Map) {
-      newLocation = Navigation.List;
-    } else {
-      newLocation = Navigation.Map;
-    }
-
-    this.setState({
-      locationStatus: this.state.locationStatus,
-      position: this.state.position,
-      messages: this.state.messages,
-      navigation: newLocation,
-      singleMessageId: null,
-    });
-  }
-
-  newMessageView() {
-    this.setState({
-      locationStatus: this.state.locationStatus,
-      position: this.state.position,
-      messages: this.state.messages,
-      navigation: Navigation.NewMessage,
-      singleMessageId: null,
     });
   }
 
@@ -177,8 +143,8 @@ export default class Application extends React.Component<{}, ApplicationState> {
         locationStatus: this.state.locationStatus,
         position: this.state.position,
         messages: newMessages,
-        navigation: Navigation.Message,
-        singleMessageId: message.id,
+        navigation: { id: "list" },
+        prevNavigation: this.state.navigation,
       });
     });
   }
@@ -215,18 +181,18 @@ export default class Application extends React.Component<{}, ApplicationState> {
         position: this.state.position,
         messages: newMessages,
         navigation: this.state.navigation,
-        singleMessageId: this.state.singleMessageId,
+        prevNavigation: this.state.prevNavigation,
       });
     });
   }
 
-  messageView(messageId: number) {
+  navigateTo(newNavigation: Navigation) {
     this.setState({
       locationStatus: this.state.locationStatus,
       position: this.state.position,
       messages: this.state.messages,
-      navigation: Navigation.Message,
-      singleMessageId: messageId,
+      navigation: newNavigation,
+      prevNavigation: this.state.navigation,
     });
   }
 
@@ -234,14 +200,12 @@ export default class Application extends React.Component<{}, ApplicationState> {
     if (this.state.locationStatus === LocationStatus.Watching) {
       return (
         <Messages
-          switchView={this.switchView.bind(this)}
-          newMessageView={this.newMessageView.bind(this)}
-          messageView={this.messageView.bind(this)}
+          navigateTo={this.navigateTo.bind(this)}
           onMessageSubmit={this.onMessageSubmit.bind(this)}
           onCommentSubmit={this.onCommentSubmit.bind(this)}
           navigation={this.state.navigation}
+          prevNavigation={this.state.prevNavigation}
           messages={this.state.messages}
-          singleMessageId={this.state.singleMessageId}
           longitude={this.state.position!.coords.longitude}
           latitude={this.state.position!.coords.latitude} />
       );
