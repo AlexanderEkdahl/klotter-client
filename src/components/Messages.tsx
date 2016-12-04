@@ -3,68 +3,87 @@ import MapComponent from "./Map";
 import MessageList from "./MessageList";
 import NewMessage from "./NewMessage";
 import SingleMessageWithComments from "./SingleMessageWithComments";
-import { Message, Navigation } from "./Application";
+import { Message } from "./Application";
+import GoBackButton from './buttons/goBackButton'
+import { Navigation } from "../routes";
 
 interface MessagesProps {
   latitude: number;
   longitude: number;
   messages: Message[];
-  singleMessageId: number | null;
   navigation: Navigation;
-  switchView: () => void;
-  newMessageView: () => void;
-  messageView: (messageId: number) => void;
+  prevNavigation: Navigation | null;
+  navigateTo: (newNavigation: Navigation) => void;
   onMessageSubmit: (value: string) => void;
   onCommentSubmit: (value: string, messageId: number) => void;
 }
 
 export default class Messages extends React.Component<MessagesProps, {}> {
 
-  renderNav(nav = this.props.navigation) {
-    let viewButton: string;
-    console.log(11, nav)
-    
-    switch(nav) {
-      case Navigation.Map: 
-        viewButton = 'Show list'; 
-      case Navigation.NewMessage:
-        console.log(3)
-        viewButton = 'Go back';
-      default:
-        viewButton = 'Show map';
+  renderNavButton(): JSX.Element {
+    const navigation = this.props.navigation;
+
+    switch (navigation.id) {
+      case 'map':
+        return (
+          <div onClick={() => { this.props.navigateTo({ id: "list" }) } } >Show list</div>
+        );
+      case 'new_message':
+      case 'message':
+        return (
+          <div onClick={() => { this.props.navigateTo(this.props.prevNavigation!) } } >Back</div>
+        );
+      case 'list':
+        return (
+          <div onClick={() => { this.props.navigateTo({ id: "map" }) } } >Show map</div>
+        )
     }
+  }
+
+  renderNav() {
+    let style: React.CSSProperties = this.props.navigation.id === 'new_message' ? styles.hidden : {};
 
     return (
       <div className={'nav'} style={styles.nav}>
-        <div onClick={this.props.switchView}>{viewButton}</div>
-        <div onClick={this.props.newMessageView}>New Message</div>
+        {this.renderNavButton()}
+        <div onClick={() => { this.props.navigateTo({ id: "new_message", prev: this.props.navigation }) } } style={style}>New Message</div>
       </div>
     )
   }
 
-  render() {
-    console.log('render message')
-    let main;
+  renderMain(): JSX.Element {
+    const navigation = this.props.navigation;
 
-    if (this.props.navigation === Navigation.Map) {
-      main = <MapComponent messageView={this.props.messageView} messages={this.props.messages} longitude={this.props.longitude} latitude={this.props.latitude} />;
-    } else if (this.props.navigation === Navigation.List) {
-      main = <MessageList messageView={this.props.messageView} messages={this.props.messages} longitude={this.props.longitude} latitude={this.props.latitude} />;
-    } else if (this.props.navigation === Navigation.NewMessage) {
-      main = <NewMessage onSubmit={(value) => { this.props.onMessageSubmit(value); } } />;
-    } else if (this.props.navigation === Navigation.Message) {
-      const message = this.props.messages.find((x) => {
-        return x.id === this.props.singleMessageId;
-      });
+    switch (navigation.id) {
+      case 'map':
+        return (
+          <MapComponent messageView={(messageId) => { this.props.navigateTo({ id: "message", prev: this.props.navigation, messageId: messageId }) } } messages={this.props.messages} longitude={this.props.longitude} latitude={this.props.latitude} />
+        )
+      case 'list':
+        return (
+          <MessageList messageView={(messageId) => { this.props.navigateTo({ id: "message", prev: this.props.navigation, messageId: messageId }) } } messages={this.props.messages} longitude={this.props.longitude} latitude={this.props.latitude} />
+        )
+      case 'new_message':
+        return (
+          <NewMessage onSubmit={(value) => { this.props.onMessageSubmit(value); } } />
+        )
+      case 'message':
+        const message = this.props.messages.find((x) => x.id === navigation.messageId);
 
-      main = <SingleMessageWithComments onCommentSubmit={this.props.onCommentSubmit} message={message!} longitude={this.props.longitude} latitude={this.props.latitude} />;
+        return (
+          <SingleMessageWithComments onCommentSubmit={this.props.onCommentSubmit} message={message!} longitude={this.props.longitude} latitude={this.props.latitude} />
+        )
     }
+  }
+
+  render() {
+    let main;
 
     return (
       <div style={styles.container}>
         {this.renderNav()}
         <div className={'mainWrapper'} style={styles.main}>
-          {main}
+          {this.renderMain()}
         </div>
       </div>
     );
@@ -93,5 +112,9 @@ const styles = {
   main: {
     flex: 1,
     height: "100%",
-  }
+  },
+
+  hidden: {
+    display: 'none'
+  },
 };
