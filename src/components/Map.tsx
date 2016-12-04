@@ -101,19 +101,6 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
 
     // Nearby messages
     this.map.addLayer({
-      id: "messages-nearby-label",
-      type: "symbol",
-      source: sourceId,
-      layout: {
-        "text-field": "{title}",
-        "text-size": 11,
-        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-        "text-anchor": "bottom",
-        "text-offset": [0, -0.8],
-      } as mapboxgl.SymbolLayout,
-      filter: ["<", "distance", 100],
-    });
-    this.map.addLayer({
       id: "messages-nearby-border",
       type: "circle",
       source: sourceId,
