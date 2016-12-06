@@ -1,5 +1,5 @@
 import * as React from "react";
-import Messages from "./Messages";
+import Main from "./Main";
 import * as moment from "moment";
 import * as update from "immutability-helper";
 import { Navigation } from "../routes";
@@ -223,6 +223,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
       command[messageIndex] = { comments: { $set: newComments } };
       const newMessages = update(this.state.messages, command);
 
+      // TODO: This works but the server returns duplicates
       let newUserMessages = this.state.userMessages;
       if (typeof this.state.userMessages.find((x) => x.id === this.state.messages[messageIndex].id) === "undefined") {
         newUserMessages = [this.state.messages[messageIndex]].concat(this.state.userMessages);
@@ -252,10 +253,19 @@ export default class Application extends React.Component<{}, ApplicationState> {
     });
   }
 
+  errorMessage(): string {
+    if (this.state.locationStatus === LocationStatus.Initializing) {
+      return "Loading...";
+    }
+
+    return "Could not retrieve location";
+  }
+
   render() {
     if (this.state.locationStatus === LocationStatus.Watching) {
       return (
-        <Messages
+        <Main
+          height={window.innerHeight}
           navigateTo={this.navigateTo.bind(this)}
           onMessageSubmit={this.onMessageSubmit.bind(this)}
           onCommentSubmit={this.onCommentSubmit.bind(this)}
@@ -263,24 +273,16 @@ export default class Application extends React.Component<{}, ApplicationState> {
           prevNavigation={this.state.prevNavigation}
           messages={this.state.messages}
           userMessages={this.state.userMessages}
-          userId={this.state.userId}
           longitude={this.state.position!.coords.longitude}
           latitude={this.state.position!.coords.latitude} />
       );
-    }
-
-    let message: string;
-    if (this.state.locationStatus === LocationStatus.Initializing) {
-      message = "Loading...";
-    } else {
-      message = "Could not retrieve location";
     }
 
     return (
       <div style={styles.splash}>
         <div>
           <img src={logo} style={styles.img} />
-          <span style={styles.message}>{message}</span>
+          <span style={styles.message}>{this.errorMessage()}</span>
         </div>
       </div>
     );

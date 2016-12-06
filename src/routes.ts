@@ -12,14 +12,8 @@ export interface Message {
   prev: Navigation;
 }
 
-export interface NewMessage {
-  id: "new_message";
-  prev: Navigation;
-}
-
 export interface User {
   id: "user";
-  prev: Navigation;
 }
 
-export type Navigation = Map | List | Message | NewMessage | User;
+export type Navigation = Map | List | Message | User;
