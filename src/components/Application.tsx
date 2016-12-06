@@ -96,7 +96,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
   }
 
   fetchMessages(position: Position): Promise<Message[]> {
-    const url = `https://klottr.ekdahl.io/get?x=${position.coords.longitude}&y=${position.coords.latitude}`;
+    const url = `https://klotter.ekdahl.io/get?x=${position.coords.longitude}&y=${position.coords.latitude}`;
 
     return new Promise<Message[]>((resolve, reject) => {
       fetch(url).then((response) => {
@@ -125,7 +125,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
   }
 
   fetchUserMessages(user_id: string): Promise<Message[]> {
-    const url = `https://klottr.ekdahl.io/get_user?user_id=${user_id}`;
+    const url = `https://klotter.ekdahl.io/get_user?user_id=${user_id}`;
 
     return new Promise<Message[]>((resolve, reject) => {
       fetch(url).then((response) => {
@@ -154,7 +154,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
   }
 
   onMessageSubmit(value) {
-    const url = `https://klottr.ekdahl.io/post`;
+    const url = `https://klotter.ekdahl.io/post`;
     const data = {
       message: value,
       x: this.state.position!.coords.longitude,
@@ -195,7 +195,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
   }
 
   onCommentSubmit(value: string, messageId: number) {
-    const url = `https://klottr.ekdahl.io/post_comment`;
+    const url = `https://klotter.ekdahl.io/post_comment`;
     const data = {
       content: value,
       message_id: messageId,
