@@ -11,7 +11,7 @@
 
 ### Development
 
-    yarn run dev
+    yarn run dev # https://localhost:8080
 
 ## Production build
 
