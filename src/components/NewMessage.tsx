@@ -39,7 +39,7 @@ export default class NewMessage extends React.Component<NewMessageProps, NewMess
     return (
       <form onSubmit={this.handleSubmit.bind(this)} style={styles.form}>
         <input onChange={this.handleChange.bind(this)} style={styles.input} value={this.state.value} placeholder={this.props.placeholder} />
-        <input type="submit" value="Comment" style={styles.submit} />
+        <input type="submit" style={styles.submit} />
       </form>
     );
   }
@@ -52,7 +52,6 @@ const styles = {
   },
 
   input: {
-    margin: 0,
     fontSize: 16,
     outline: "none",
     flexGrow: 1,
@@ -60,7 +59,6 @@ const styles = {
   },
 
   submit: {
-    margin: 0,
     fontSize: 20,
     backgroundColor: "#FF00000",
     border: "none",

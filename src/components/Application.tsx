@@ -51,7 +51,7 @@ export default class Application extends React.Component<{}, ApplicationState> {
       position: null,
       messages: [],
       userMessages: [],
-      navigation: { id: "map" },
+      navigation: { id: "list" },
       prevNavigation: null,
       userId: userId(),
     };

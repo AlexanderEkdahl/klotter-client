@@ -8,12 +8,23 @@ interface HeaderProps {
 }
 
 export default class Header extends React.PureComponent<HeaderProps, {}> {
+    linkProps(id): React.HTMLProps<HTMLDivElement> {
+        if (this.props.navigation.id === id) {
+            return  {style: Object.assign({}, styles.link, { borderBottom: "3px solid red" })};
+        }
+
+        return {
+            style: styles.link,
+            onClick: () => { this.props.navigateTo({ id: id }); }
+        };
+    }
+
     render(): JSX.Element {
         switch (this.props.navigation.id) {
             case "message":
                 return (
                     <div style={styles.nav}>
-                        <div onClick={() => { this.props.navigateTo(this.props.prevNavigation!); } }>Back</div>
+                        <div style={styles.link} onClick={() => { this.props.navigateTo(this.props.prevNavigation!); } }>Back</div>
                     </div>
                 );
             case "map":
@@ -21,9 +32,13 @@ export default class Header extends React.PureComponent<HeaderProps, {}> {
             case "list":
                 return (
                     <div style={styles.nav}>
-                        <div onClick={() => { this.props.navigateTo({ id: "map" }); } } >Show map</div>
-                        <div onClick={() => { this.props.navigateTo({ id: "list" }); } } >Show List</div>
-                        <div onClick={() => { this.props.navigateTo({ id: "user" }); } } >User</div>
+                        <div>
+                            <span {...this.linkProps("list")}>List</span>
+                            <span {...this.linkProps("map")}>Map</span>
+                        </div>
+                        <div>
+                            <span {...this.linkProps("user")}>User</span>
+                        </div>
                     </div>
                 );
         }
@@ -31,16 +46,20 @@ export default class Header extends React.PureComponent<HeaderProps, {}> {
 }
 
 const styles = {
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    color: "#FF0000",
-    fontSize: 20,
-    height: 50,
-    cursor: "pointer",
-    paddingLeft: 10,
-    paddingRight: 10,
-    textShadow: "1px 1px 0px rgba(0, 0, 0, 0.2)"
-  } as React.CSSProperties,
+    nav: {
+        display: "flex",
+        fontSize: 20,
+        justifyContent: "space-between",
+        height: 50,
+    } as React.CSSProperties,
+
+    link: {
+        paddingLeft: 10,
+        paddingRight: 10,
+        height: 47,
+        display: "block",
+        float: "left",
+        lineHeight: "47px",
+        cursor: "pointer"
+    } as React.CSSProperties,
 };
