@@ -4,7 +4,6 @@ import { Navigation } from "../routes";
 interface HeaderProps {
     navigateTo: (newNavigation: Navigation) => void;
     navigation: Navigation;
-    prevNavigation: Navigation | null;
 }
 
 export default class Header extends React.PureComponent<HeaderProps, {}> {
@@ -20,11 +19,13 @@ export default class Header extends React.PureComponent<HeaderProps, {}> {
     }
 
     render(): JSX.Element {
-        switch (this.props.navigation.id) {
+        const navigation = this.props.navigation;
+
+        switch (navigation.id) {
             case "message":
                 return (
                     <div style={styles.nav}>
-                        <div style={styles.link} onClick={() => { this.props.navigateTo(this.props.prevNavigation!); } }>Back</div>
+                        <div style={styles.link} onClick={() => { this.props.navigateTo(navigation.prev); } }>Back</div>
                     </div>
                 );
             case "map":

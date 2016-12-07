@@ -15,7 +15,6 @@ interface MainProps {
   messages: Message[];
   userMessages: Message[];
   navigation: Navigation;
-  prevNavigation: Navigation | null;
   navigateTo: (newNavigation: Navigation) => void;
   onMessageSubmit: (value: string) => void;
   onCommentSubmit: (value: string, messageId: number) => void;
@@ -71,7 +70,7 @@ export default class Main extends React.Component<MainProps, {}> {
   render() {
     return (
       <div>
-        <Header navigateTo={this.props.navigateTo} navigation={this.props.navigation} prevNavigation={this.props.prevNavigation}></Header>
+        <Header navigateTo={this.props.navigateTo} navigation={this.props.navigation}></Header>
         <div style={{height: this.props.height - 90, overflow: "scroll"}}>
           {this.renderMain()}
         </div>

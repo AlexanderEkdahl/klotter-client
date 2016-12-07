@@ -2,8 +2,9 @@ import * as React from "react";
 import Main from "./Main";
 import * as moment from "moment";
 import * as update from "immutability-helper";
-import { Navigation } from "../routes";
+import { Navigation, NotFound } from "../routes";
 import { Message, Comment } from "../models";
+import Router from "./Router";
 
 const logo = require<string>("./logo.png");
 
@@ -14,13 +15,16 @@ const enum LocationStatus {
   Failed,
 }
 
+interface ApplicationProps {
+  navigation: Navigation | NotFound;
+  navigateTo: (navigation: Navigation) => void;
+}
+
 interface ApplicationState {
   locationStatus: LocationStatus;
   position: Position | null;
   messages: Message[];
   userMessages: Message[];
-  navigation: Navigation;
-  prevNavigation: Navigation | null;
   userId: string;
 }
 
@@ -40,7 +44,7 @@ function userId(): string {
   return id;
 }
 
-export default class Application extends React.Component<{}, ApplicationState> {
+class Application extends React.Component<ApplicationProps, ApplicationState> {
   watchID: number;
 
   constructor() {
@@ -51,8 +55,6 @@ export default class Application extends React.Component<{}, ApplicationState> {
       position: null,
       messages: [],
       userMessages: [],
-      navigation: { id: "list" },
-      prevNavigation: null,
       userId: userId(),
     };
   }
@@ -66,8 +68,6 @@ export default class Application extends React.Component<{}, ApplicationState> {
             position: position,
             messages: messages[0],
             userMessages: messages[1],
-            navigation: this.state.navigation,
-            prevNavigation: this.state.prevNavigation,
             userId: this.state.userId,
           });
         });
@@ -77,8 +77,6 @@ export default class Application extends React.Component<{}, ApplicationState> {
           position: null,
           messages: this.state.messages,
           userMessages: this.state.userMessages,
-          navigation: this.state.navigation,
-          prevNavigation: this.state.prevNavigation,
           userId: this.state.userId,
         });
       });
@@ -88,8 +86,6 @@ export default class Application extends React.Component<{}, ApplicationState> {
         position: null,
         messages: [],
         userMessages: this.state.userMessages,
-        navigation: this.state.navigation,
-        prevNavigation: this.state.prevNavigation,
         userId: this.state.userId,
       });
     }
@@ -187,10 +183,10 @@ export default class Application extends React.Component<{}, ApplicationState> {
         position: this.state.position,
         messages: newMessages,
         userMessages: newUserMessages,
-        navigation: { id: "list" },
-        prevNavigation: this.state.navigation,
         userId: this.state.userId,
       });
+
+      this.props.navigateTo({ id: "list" });
     });
   }
 
@@ -234,22 +230,8 @@ export default class Application extends React.Component<{}, ApplicationState> {
         position: this.state.position,
         messages: newMessages,
         userMessages: newUserMessages,
-        navigation: this.state.navigation,
-        prevNavigation: this.state.prevNavigation,
         userId: this.state.userId,
       });
-    });
-  }
-
-  navigateTo(newNavigation: Navigation) {
-    this.setState({
-      locationStatus: this.state.locationStatus,
-      position: this.state.position,
-      messages: this.state.messages,
-      userMessages: this.state.userMessages,
-      navigation: newNavigation,
-      prevNavigation: this.state.navigation,
-      userId: this.state.userId,
     });
   }
 
@@ -262,15 +244,16 @@ export default class Application extends React.Component<{}, ApplicationState> {
   }
 
   render() {
-    if (this.state.locationStatus === LocationStatus.Watching) {
+    if (this.props.navigation.id === "404") {
+      return <span>404: Not found</span>;
+    } else if (this.state.locationStatus === LocationStatus.Watching) {
       return (
         <Main
           height={window.innerHeight}
-          navigateTo={this.navigateTo.bind(this)}
+          navigateTo={this.props.navigateTo}
           onMessageSubmit={this.onMessageSubmit.bind(this)}
           onCommentSubmit={this.onCommentSubmit.bind(this)}
-          navigation={this.state.navigation}
-          prevNavigation={this.state.prevNavigation}
+          navigation={this.props.navigation}
           messages={this.state.messages}
           userMessages={this.state.userMessages}
           longitude={this.state.position!.coords.longitude}
@@ -288,6 +271,8 @@ export default class Application extends React.Component<{}, ApplicationState> {
     );
   }
 }
+
+export default Router(Application);
 
 const styles = {
   splash: {

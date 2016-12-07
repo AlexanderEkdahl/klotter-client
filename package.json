@@ -5,7 +5,7 @@
   "scripts": {
     "dist": "webpack",
     "lint": "tslint 'src/**/*.tsx' --fix",
-    "dev": "webpack-dev-server --https"
+    "dev": "webpack-dev-server --https --history-api-fallback"
   },
   "author": "Alexander Ekdahl",
   "license": "ISC",

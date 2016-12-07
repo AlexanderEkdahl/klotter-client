@@ -9,6 +9,7 @@ var configuration = {
     output: {
         path: 'dist',
         filename: 'bundle-[hash].js',
+        publicPath: '/',
     },
 
     devtool: "source-map",
