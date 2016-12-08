@@ -10,25 +10,7 @@ interface SingleMessageWithCommentsProps {
   message: Message;
 }
 
-interface SingleMessageWithCommentsState {
-  value: string;
-}
-
-export default class SingleMessageWithComments extends React.Component<SingleMessageWithCommentsProps, SingleMessageWithCommentsState> {
-  constructor() {
-    super();
-
-    this.state = {
-      value: "",
-    };
-  }
-
-  handleChange(event) {
-    this.setState({
-      value: event.target.value
-    });
-  }
-
+export default class SingleMessageWithComments extends React.Component<SingleMessageWithCommentsProps, {}> {
   render() {
     const distance = haversine(this.props.latitude, this.props.longitude, this.props.message.latitude, this.props.message.longitude);
 

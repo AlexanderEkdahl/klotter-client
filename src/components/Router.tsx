@@ -25,7 +25,7 @@ export default (Component) => class extends React.Component<{}, RouterState> {
   }
 
   navigateTo(navigation: Navigation) {
-    history.pushState(navigation, undefined, url(navigation));
+    history.pushState(navigation, "", url(navigation));
 
     this.setState({
       navigation: navigation,

@@ -5,6 +5,7 @@ import * as update from "immutability-helper";
 import { Navigation, NotFound } from "../routes";
 import { Message, Comment } from "../models";
 import Router from "./Router";
+import watchPosition from "../watchPosition";
 
 const logo = require<string>("./logo.png");
 
@@ -61,23 +62,19 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
 
   componentDidMount() {
     if ("geolocation" in navigator) {
-      this.watchID = navigator.geolocation.watchPosition((position) => {
+      this.watchID = watchPosition((position) => {
         Promise.all([this.fetchMessages(position), this.fetchUserMessages(this.state.userId)]).then((messages) => {
           this.setState({
             locationStatus: LocationStatus.Watching,
             position: position,
             messages: messages[0],
             userMessages: messages[1],
-            userId: this.state.userId,
           });
         });
       }, () => {
         this.setState({
           locationStatus: LocationStatus.Failed,
           position: null,
-          messages: this.state.messages,
-          userMessages: this.state.userMessages,
-          userId: this.state.userId,
         });
       });
     } else {
@@ -85,8 +82,6 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
         locationStatus: LocationStatus.Unavailable,
         position: null,
         messages: [],
-        userMessages: this.state.userMessages,
-        userId: this.state.userId,
       });
     }
   }
@@ -179,11 +174,8 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
       const newUserMessages = [message].concat(this.state.userMessages);
 
       this.setState({
-        locationStatus: this.state.locationStatus,
-        position: this.state.position,
         messages: newMessages,
         userMessages: newUserMessages,
-        userId: this.state.userId,
       });
 
       this.props.navigateTo({ id: "list" });
@@ -226,11 +218,8 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
       }
 
       this.setState({
-        locationStatus: this.state.locationStatus,
-        position: this.state.position,
         messages: newMessages,
         userMessages: newUserMessages,
-        userId: this.state.userId,
       });
     });
   }
