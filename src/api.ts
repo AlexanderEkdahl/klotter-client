@@ -1,7 +1,7 @@
-import { Message, Comment } from "./models";
 import * as moment from "moment";
+import { Comment, Message } from "./models";
 
-export function fetchMessages(position: Position): Promise<Message[]> {
+export const fetchMessages = (position: Position): Promise<Message[]> => {
   const url = `https://klotter.ekdahl.io/get?x=${position.coords.longitude}&y=${position.coords.latitude}`;
 
   return new Promise<Message[]>((resolve, reject) => {
@@ -21,16 +21,16 @@ export function fetchMessages(position: Position): Promise<Message[]> {
               content: comment.content,
               createdAt: moment(comment.created_at),
             };
-          })
+          }),
         };
       });
 
       resolve(messages);
     });
   });
-}
+};
 
-export function fetchUserMessages(user_id: string): Promise<Message[]> {
+export const fetchUserMessages = (user_id: string): Promise<Message[]> => {
   const url = `https://klotter.ekdahl.io/get_user?user_id=${user_id}`;
 
   return new Promise<Message[]>((resolve, reject) => {
@@ -50,16 +50,16 @@ export function fetchUserMessages(user_id: string): Promise<Message[]> {
               content: comment.content,
               createdAt: moment(comment.created_at),
             };
-          })
+          }),
         };
       });
 
       resolve(messages);
     });
   });
-}
+};
 
-export function postMessage(content: string, longitude: number, latitude: number, userId: string): Promise<Message> {
+export const postMessage = (content: string, longitude: number, latitude: number, userId: string): Promise<Message> => {
   const url = `https://klotter.ekdahl.io/post`;
   const data = {
     message: content,
@@ -71,12 +71,12 @@ export function postMessage(content: string, longitude: number, latitude: number
   return new Promise<Message>((resolve, reject) => {
     fetch(url, {
       method: "POST",
-      body: JSON.stringify(data)
-    }).then(function (response) {
+      body: JSON.stringify(data),
+    }).then((response) => {
       // TODO: Error handling
       return response.json();
-    }, function (error) {
-      console.log(error.message);
+    }, (error) => {
+      console.error(error.message);
     }).then((json: any) => {
       const message: Message = {
         id: json.id,
@@ -90,9 +90,9 @@ export function postMessage(content: string, longitude: number, latitude: number
       resolve(message);
     });
   });
-}
+};
 
-export function postComment(content: string, messageId: number, userId: string): Promise<Comment> {
+export const postComment = (content: string, messageId: number, userId: string): Promise<Comment> => {
   const url = `https://klotter.ekdahl.io/post_comment`;
   const data = {
     content: content,
@@ -103,11 +103,11 @@ export function postComment(content: string, messageId: number, userId: string):
   return new Promise<Comment>((resolve, reject) => {
     fetch(url, {
       method: "POST",
-      body: JSON.stringify(data)
-    }).then(function (response) {
+      body: JSON.stringify(data),
+    }).then((response) => {
       return response.json();
-    }, function (error) {
-      console.log(error.message);
+    }, (error) => {
+      console.error(error.message);
     }).then((json: any) => {
       const comment: Comment = {
         id: json.id,
@@ -118,4 +118,4 @@ export function postComment(content: string, messageId: number, userId: string):
       resolve(comment);
     });
   });
-}
+};

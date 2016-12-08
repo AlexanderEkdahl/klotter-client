@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Navigation, NotFound, navigation, url } from "../routes";
+import { Navigation, navigation, NotFound, url } from "../routes";
 
 interface RouterState {
   navigation: Navigation | NotFound;
@@ -42,7 +42,8 @@ export default function Router<T extends RouterProps>(Component: React.Component
       return <Component
         {...this.props}
         navigation={this.state.navigation}
-        navigateTo={this.navigateTo.bind(this)} />;
+        navigateTo={this.navigateTo.bind(this)}
+      />;
     }
   };
 }

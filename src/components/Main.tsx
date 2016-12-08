@@ -1,12 +1,12 @@
 import * as React from "react";
-import MapComponent from "./Map";
-import MessageList from "./MessageList";
-import UserMessages from "./UserMessages";
-import Header from "./Header";
-import NewMessage from "./NewMessage";
-import SingleMessageWithComments from "./SingleMessageWithComments";
 import { Message } from "../models";
 import { Navigation } from "../routes";
+import Header from "./Header";
+import MapComponent from "./Map";
+import MessageList from "./MessageList";
+import NewMessage from "./NewMessage";
+import SingleMessageWithComments from "./SingleMessageWithComments";
+import UserMessages from "./UserMessages";
 
 interface MainProps {
   height: number;
@@ -70,7 +70,7 @@ export default class Main extends React.Component<MainProps, {}> {
   render() {
     return (
       <div>
-        <Header navigateTo={this.props.navigateTo} navigation={this.props.navigation}></Header>
+        <Header navigateTo={this.props.navigateTo} navigation={this.props.navigation} />
         <div style={{height: this.props.height - 90, overflow: "scroll"}}>
           {this.renderMain()}
         </div>

@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Message } from "../models";
 import haversine from "../haversine";
+import { Message } from "../models";
 import SingleMessage from "./SingleMessage";
 
 interface UserMessagesProps {

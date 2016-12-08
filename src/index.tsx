@@ -6,5 +6,5 @@ import "whatwg-fetch";
 
 ReactDOM.render(
   <Application />,
-  document.getElementById("app")
+  document.getElementById("app"),
 );

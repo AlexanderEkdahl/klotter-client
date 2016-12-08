@@ -1,12 +1,10 @@
-import * as React from "react";
-import Main from "./Main";
-import * as moment from "moment";
 import * as update from "immutability-helper";
-import { Navigation, NotFound } from "../routes";
-import { Message, Comment } from "../models";
-import { fetchMessages, fetchUserMessages, postMessage, postComment } from "../api";
-import Router, { RouterProps } from "./Router";
+import * as React from "react";
+import { fetchMessages, fetchUserMessages, postComment, postMessage } from "../api";
+import { Message } from "../models";
 import watchPosition from "../watchPosition";
+import Main from "./Main";
+import Router, { RouterProps } from "./Router";
 
 const logo = require<string>("./logo.png");
 
@@ -28,12 +26,13 @@ interface ApplicationState {
 function userId(): string {
   let id = localStorage.getItem("user_id");
 
-  if (id == null) {
+  if (id === null) {
     id = "";
-    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    for (let i = 0; i < 20; i++)
+    for (let i = 0; i < 20; i++) {
       id += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
   }
 
   localStorage.setItem("user_id", id);
@@ -42,7 +41,7 @@ function userId(): string {
 }
 
 class Application extends React.Component<RouterProps, ApplicationState> {
-  watchID: number;
+  watchID: number | null;
 
   constructor() {
     super();
@@ -57,7 +56,6 @@ class Application extends React.Component<RouterProps, ApplicationState> {
   }
 
   componentDidMount() {
-    if ("geolocation" in navigator) {
       this.watchID = watchPosition((position) => {
         Promise.all([fetchMessages(position), fetchUserMessages(this.state.userId)]).then((messages) => {
           this.setState({
@@ -70,16 +68,14 @@ class Application extends React.Component<RouterProps, ApplicationState> {
       }, () => {
         this.setState({
           locationStatus: LocationStatus.Failed,
-          position: null,
         });
       });
-    } else {
-      this.setState({
-        locationStatus: LocationStatus.Unavailable,
-        position: null,
-        messages: [],
-      });
-    }
+
+      if (this.watchID === null) {
+        this.setState({
+          locationStatus: LocationStatus.Unavailable,
+        });
+      }
   }
 
   onMessageSubmit(value: string) {
@@ -101,13 +97,6 @@ class Application extends React.Component<RouterProps, ApplicationState> {
   }
 
   onCommentSubmit(value: string, messageId: number) {
-    const url = `https://klotter.ekdahl.io/post_comment`;
-    const data = {
-      content: value,
-      message_id: messageId,
-      user_id: this.state.userId,
-    };
-
     postComment(value, messageId, this.state.userId).then((comment) => {
       const messageIndex = this.state.messages.findIndex((x) => {
         return x.id === messageId;
@@ -152,7 +141,8 @@ class Application extends React.Component<RouterProps, ApplicationState> {
           messages={this.state.messages}
           userMessages={this.state.userMessages}
           longitude={this.state.position!.coords.longitude}
-          latitude={this.state.position!.coords.latitude} />
+          latitude={this.state.position!.coords.latitude}
+        />
       );
     }
 
@@ -189,5 +179,5 @@ const styles = {
     marginTop: 24,
     textAlign: "center",
     textShadow: "1px 1px 1px rgba(0, 0, 0, 0.4)",
-  }
+  },
 };

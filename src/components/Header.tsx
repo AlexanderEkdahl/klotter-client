@@ -9,12 +9,12 @@ interface HeaderProps {
 export default class Header extends React.PureComponent<HeaderProps, {}> {
     linkProps(navigation: Navigation): React.HTMLProps<HTMLDivElement> {
         if (this.props.navigation.id === navigation.id) {
-            return { style: {...styles.link, borderBottom: "3px solid red" } };
+            return { style: { ...styles.link, borderBottom: "3px solid red" } };
         }
 
         return {
             style: styles.link,
-            onClick: () => { this.props.navigateTo(navigation); }
+            onClick: () => { this.props.navigateTo(navigation); },
         };
     }
 
@@ -61,6 +61,6 @@ const styles = {
         display: "block",
         float: "left",
         lineHeight: "47px",
-        cursor: "pointer"
+        cursor: "pointer",
     } as React.CSSProperties,
 };

@@ -1,7 +1,4 @@
 import * as React from "react";
-import { Message } from "../models";
-import * as moment from "moment";
-import haversine from "../haversine";
 
 interface NewMessageProps {
   onSubmit: (value: string) => void;
@@ -23,7 +20,7 @@ export default class NewMessage extends React.Component<NewMessageProps, NewMess
 
   handleChange(event: any) {
     this.setState({
-      value: event.target.value
+      value: event.target.value,
     });
   }
 

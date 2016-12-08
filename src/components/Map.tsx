@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Message } from "../models";
 import haversine from "../haversine";
+import { Message } from "../models";
 import mapboxgl = require("mapbox-gl/dist/mapbox-gl.js");
 import { render, unmountComponentAtNode } from "react-dom";
 
@@ -25,7 +25,7 @@ interface MapState {
 }
 
 function createGeoJSONCirclePolygon(longitude: number, latitude: number, km: number, points = 64): mapboxgl.GeoJSONSourceRaw {
-  let ret: [number, number][] = [];
+  let ret: Array<[number, number]> = [];
   let distanceX = km / (111.320 * Math.cos(latitude * Math.PI / 180));
   let distanceY = km / 110.574;
 
@@ -45,12 +45,12 @@ function createGeoJSONCirclePolygon(longitude: number, latitude: number, km: num
     geometry: {
       type: "Polygon",
       coordinates: [ret],
-    }
+    },
   };
 
   return {
     type: "geojson",
-    data: feature
+    data: feature,
   };
 };
 
@@ -72,13 +72,13 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [message.longitude, message.latitude]
+          coordinates: [message.longitude, message.latitude],
         },
         properties: {
           id: message.id,
           title: message.content,
-          distance: haversine(this.state.latitude, this.state.longitude, message.latitude, message.longitude)
-        }
+          distance: haversine(this.state.latitude, this.state.longitude, message.latitude, message.longitude),
+        },
       };
     });
 
@@ -86,7 +86,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
       type: "geojson",
       data: {
         type: "FeatureCollection",
-        features: features
+        features: features,
       },
       cluster: true,
       clusterMaxZoom: 13,
@@ -169,11 +169,11 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
       layout: {
         "text-field": "{point_count}",
         "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-        "text-size": 16
+        "text-size": 16,
       } as mapboxgl.SymbolLayout,
       paint: {
         "text-color": "#fff",
-      }
+      },
     });
   }
 
@@ -190,7 +190,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
       {feature.properties.title}
     </span>, el);
 
-    let popup = new mapboxgl.Popup({ closeButton: false })
+    new mapboxgl.Popup({ closeButton: false })
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(el)
       .on("close", () => { unmountComponentAtNode(el); })
@@ -206,8 +206,8 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
       layout: {},
       paint: {
         "fill-color": "#088",
-        "fill-opacity": 0.15
-      }
+        "fill-opacity": 0.15,
+      },
     });
 
     this.renderMessages();
@@ -220,7 +220,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
       container: this.mapContainer,
       style: "mapbox://styles/mapbox/streets-v10",
       center: [this.state.longitude, this.state.latitude],
-      zoom: 16
+      zoom: 16,
     });
 
     this.map.on("load", this.onMapLoad.bind(this));
@@ -231,6 +231,6 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
   }
 
   render() {
-    return <div ref={(div) => { this.mapContainer = div; } }></div>;
+    return <div ref={(div) => { this.mapContainer = div; } } />;
   }
 }
