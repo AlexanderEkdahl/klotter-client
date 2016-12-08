@@ -5,7 +5,7 @@ interface RouterState {
   navigation: Navigation | NotFound;
 }
 
-export default (Component) => class extends React.Component<{}, RouterState> {
+export default (Component: any) => class extends React.Component<{}, RouterState> {
   constructor() {
     super();
 

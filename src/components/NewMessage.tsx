@@ -21,13 +21,13 @@ export default class NewMessage extends React.Component<NewMessageProps, NewMess
     };
   }
 
-  handleChange(event) {
+  handleChange(event: any) {
     this.setState({
       value: event.target.value
     });
   }
 
-  handleSubmit(event) {
+  handleSubmit(event: any) {
     this.props.onSubmit(this.state.value);
     this.setState({
       value: "",

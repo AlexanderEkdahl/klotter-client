@@ -9,16 +9,14 @@ interface SingleMessageProps {
 
 const messageColors = ["#ff6666", "#6d72c4", "#a37aa2", "#73886e", "#ef9820"];
 
-function messageColor(id) {
-  return {
-    backgroundColor: messageColors[id % messageColors.length]
-  };
+function messageColor(id: number): string {
+  return messageColors[id % messageColors.length];
 }
 
 export default class SingleMessage extends React.Component<SingleMessageProps, {}> {
   render() {
     const message = this.props.message;
-    const style = Object.assign({}, styles.message, messageColor(message.id));
+    const style = { ...styles.message, backgroundColor: messageColor(message.id) };
 
     return (
       <div style={style}>

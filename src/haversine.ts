@@ -1,5 +1,5 @@
 export default function (lat1: number, lon1: number, lat2: number, lon2: number): number {
-  function toRad(x) {
+  function toRad(x: number) {
     return x * Math.PI / 180;
   }
 

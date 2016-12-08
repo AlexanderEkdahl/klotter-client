@@ -4,8 +4,10 @@
         "module": "commonjs",
         "target": "es5",
         "jsx": "react",
-        "lib": ["dom", "es6"],
-        "strictNullChecks": true
+        "lib": ["dom", "es5", "es2015.symbol", "es2015.iterable", "es2015.promise", "es2015.core"],
+        "strictNullChecks": true,
+        "importHelpers": true,
+        "noImplicitAny": true
     },
     "include": [
         "src/**/*"

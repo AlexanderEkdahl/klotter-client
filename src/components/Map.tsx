@@ -24,7 +24,7 @@ interface MapState {
   longitude: number;
 }
 
-function createGeoJSONCirclePolygon(longitude, latitude, km: number, points = 64): mapboxgl.GeoJSONSourceRaw {
+function createGeoJSONCirclePolygon(longitude: number, latitude: number, km: number, points = 64): mapboxgl.GeoJSONSourceRaw {
   let ret: [number, number][] = [];
   let distanceX = km / (111.320 * Math.cos(latitude * Math.PI / 180));
   let distanceY = km / 110.574;
@@ -58,7 +58,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
   mapContainer: HTMLDivElement;
   map: mapboxgl.Map;
 
-  constructor(props) {
+  constructor(props: MapProps) {
     super();
     this.state = {
       latitude: props.latitude,
@@ -177,7 +177,7 @@ export default class MapComponent extends React.Component<MapProps, MapState> {
     });
   }
 
-  onMapClick(e) {
+  onMapClick(e: any) {
     let features = this.map.queryRenderedFeatures(e.point, { layers: ["messages-nearby"] });
 
     if (!features.length) {

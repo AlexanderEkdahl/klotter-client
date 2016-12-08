@@ -93,14 +93,14 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
       fetch(url).then((response) => {
         return response.json();
       }).then((json: any) => {
-        const messages = json.map((message) => {
+        const messages = json.map((message: any) => {
           return {
             id: message.id,
             content: message.message,
             createdAt: moment(message.created_at),
             latitude: message.y,
             longitude: message.x,
-            comments: message.Comments.map((comment) => {
+            comments: message.Comments.map((comment: any) => {
               return {
                 id: comment.id,
                 content: comment.content,
@@ -122,14 +122,14 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
       fetch(url).then((response) => {
         return response.json();
       }).then((json: any) => {
-        const messages = json.map((message) => {
+        const messages = json.map((message: any) => {
           return {
             id: message.id,
             content: message.message,
             createdAt: moment(message.created_at),
             latitude: message.y,
             longitude: message.x,
-            comments: message.Comments.map((comment) => {
+            comments: message.Comments.map((comment: any) => {
               return {
                 id: comment.id,
                 content: comment.content,
@@ -144,7 +144,7 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
     });
   }
 
-  onMessageSubmit(value) {
+  onMessageSubmit(value: string) {
     const url = `https://klotter.ekdahl.io/post`;
     const data = {
       message: value,
@@ -207,7 +207,7 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
         createdAt: moment(json.created_at),
       };
       const newComments = this.state.messages[messageIndex].comments.concat([comment]);
-      const command = {};
+      const command: any = {};
       command[messageIndex] = { comments: { $set: newComments } };
       const newMessages = update(this.state.messages, command);
 

@@ -7,14 +7,14 @@ interface HeaderProps {
 }
 
 export default class Header extends React.PureComponent<HeaderProps, {}> {
-    linkProps(id): React.HTMLProps<HTMLDivElement> {
-        if (this.props.navigation.id === id) {
-            return  {style: Object.assign({}, styles.link, { borderBottom: "3px solid red" })};
+    linkProps(navigation: Navigation): React.HTMLProps<HTMLDivElement> {
+        if (this.props.navigation.id === navigation.id) {
+            return { style: {...styles.link, borderBottom: "3px solid red" } };
         }
 
         return {
             style: styles.link,
-            onClick: () => { this.props.navigateTo({ id: id }); }
+            onClick: () => { this.props.navigateTo(navigation); }
         };
     }
 
@@ -34,11 +34,11 @@ export default class Header extends React.PureComponent<HeaderProps, {}> {
                 return (
                     <div style={styles.nav}>
                         <div>
-                            <span {...this.linkProps("list")}>List</span>
-                            <span {...this.linkProps("map")}>Map</span>
+                            <span {...this.linkProps({ id: "list" }) }>List</span>
+                            <span {...this.linkProps({ id: "map" }) }>Map</span>
                         </div>
                         <div>
-                            <span {...this.linkProps("user")}>User</span>
+                            <span {...this.linkProps({ id: "user" }) }>User</span>
                         </div>
                     </div>
                 );
