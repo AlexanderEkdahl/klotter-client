@@ -4,6 +4,7 @@ import { IMessage } from "../models";
 interface ISingleMessageProps {
   message: IMessage;
   distance: number;
+  styles?: React.CSSProperties;
 }
 
 const messageColors = ["#ff6666", "#6d72c4", "#a37aa2", "#73886e", "#ef9820"];
@@ -15,7 +16,7 @@ function messageColor(id: number): string {
 export default class SingleMessage extends React.Component<ISingleMessageProps, {}> {
   render() {
     const message = this.props.message;
-    const style = { ...styles.message, backgroundColor: messageColor(message.id) };
+    const style = { ...styles.message, ...this.props.styles, backgroundColor: messageColor(message.id) };
 
     return (
       <div style={style}>
@@ -35,7 +36,6 @@ export const styles = {
     padding: 8,
     borderRadius: 3,
     margin: 4,
-    cursor: "pointer",
   },
 
   content: {

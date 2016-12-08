@@ -24,7 +24,7 @@ export default class SingleMessageWithComments extends React.Component<ISingleMe
 
     return (
       <div>
-        <SingleMessage message={this.props.message} distance={distance} />
+        <SingleMessage message={this.props.message} distance={distance} styles={{cursor: "pointer"}} />
         <div style={styles.hr} />
         {comments}
       </div>
