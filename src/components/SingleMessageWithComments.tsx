@@ -1,15 +1,15 @@
 import * as React from "react";
 import haversine from "../haversine";
-import { Message } from "../models";
+import { IMessage } from "../models";
 import SingleMessage from "./SingleMessage";
 
-interface SingleMessageWithCommentsProps {
+interface ISingleMessageWithCommentsProps {
   latitude: number;
   longitude: number;
-  message: Message;
+  message: IMessage;
 }
 
-export default class SingleMessageWithComments extends React.Component<SingleMessageWithCommentsProps, {}> {
+export default class SingleMessageWithComments extends React.Component<ISingleMessageWithCommentsProps, {}> {
   render() {
     const distance = haversine(this.props.latitude, this.props.longitude, this.props.message.latitude, this.props.message.longitude);
 

@@ -1,31 +1,31 @@
 import * as React from "react";
-import { Navigation } from "../routes";
+import { Routes } from "../routes";
 
-interface HeaderProps {
-    navigateTo: (newNavigation: Navigation) => void;
-    navigation: Navigation;
+interface IHeaderProps {
+    navigateTo: (newRoute: Routes) => void;
+    route: Routes;
 }
 
-export default class Header extends React.PureComponent<HeaderProps, {}> {
-    linkProps(navigation: Navigation): React.HTMLProps<HTMLDivElement> {
-        if (this.props.navigation.id === navigation.id) {
+export default class Header extends React.PureComponent<IHeaderProps, {}> {
+    linkProps(route: Routes): React.HTMLProps<HTMLDivElement> {
+        if (this.props.route.id === route.id) {
             return { style: { ...styles.link, borderBottom: "3px solid red" } };
         }
 
         return {
             style: styles.link,
-            onClick: () => { this.props.navigateTo(navigation); },
+            onClick: () => { this.props.navigateTo(route); },
         };
     }
 
     render(): JSX.Element {
-        const navigation = this.props.navigation;
+        const route = this.props.route;
 
-        switch (navigation.id) {
+        switch (route.id) {
             case "message":
                 return (
                     <div style={styles.nav}>
-                        <div style={styles.link} onClick={() => { this.props.navigateTo(navigation.prev); } }>Back</div>
+                        <div style={styles.link} onClick={() => { this.props.navigateTo(route.prev); } }>Back</div>
                     </div>
                 );
             case "map":

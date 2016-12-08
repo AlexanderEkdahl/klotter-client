@@ -1,5 +1,7 @@
 {
-  "extends": ["tslint-react"],
+  "extends": [
+    "tslint-react"
+  ],
   "rules": {
     "class-name": true,
     "comment-format": [
@@ -58,6 +60,10 @@
     "no-trailing-whitespace": true,
     "no-unsafe-finally": true,
     "no-var-keyword": true,
+    "interface-name": [
+      true,
+      "always-prefix"
+    ],
     "one-line": [
       true,
       "check-open-brace",

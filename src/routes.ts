@@ -1,28 +1,28 @@
-export interface Map {
+export interface IMap {
   id: "map";
 }
 
-export interface List {
+export interface IList {
   id: "list";
 }
 
-export interface Message {
+export interface IMessage {
   id: "message";
   messageId: number;
-  prev: Navigation;
+  prev: Routes;
 }
 
-export interface User {
+export interface IUser {
   id: "user";
 }
 
-export interface NotFound {
+export interface INotFound {
   id: "404";
 }
 
-export type Navigation = List | Map | Message | User;
+export type Routes = IList | IMap | IMessage | IUser;
 
-export function navigation(url: string): Navigation | NotFound {
+export function route(url: string): Routes | INotFound {
   let match: RegExpMatchArray | null;
 
   if (url === "/") {
@@ -38,14 +38,14 @@ export function navigation(url: string): Navigation | NotFound {
   return { id: "404" };
 }
 
-export function url(navigation: Navigation): string {
-  switch (navigation.id) {
+export function url(route: Routes): string {
+  switch (route.id) {
     case "list":
       return "/";
     case "map":
       return "/map";
     case "message":
-      return `/message/${navigation.messageId}`;
+      return `/message/${route.messageId}`;
     case "user":
       return "/user";
   }

@@ -1,10 +1,10 @@
 import * as moment from "moment";
-import { Comment, Message } from "./models";
+import { IComment, IMessage } from "./models";
 
-export const fetchMessages = (position: Position): Promise<Message[]> => {
+export const fetchMessages = (position: Position): Promise<IMessage[]> => {
   const url = `https://klotter.ekdahl.io/get?x=${position.coords.longitude}&y=${position.coords.latitude}`;
 
-  return new Promise<Message[]>((resolve, reject) => {
+  return new Promise<IMessage[]>((resolve, reject) => {
     fetch(url).then((response) => {
       return response.json();
     }).then((json: any) => {
@@ -30,10 +30,10 @@ export const fetchMessages = (position: Position): Promise<Message[]> => {
   });
 };
 
-export const fetchUserMessages = (user_id: string): Promise<Message[]> => {
+export const fetchUserMessages = (user_id: string): Promise<IMessage[]> => {
   const url = `https://klotter.ekdahl.io/get_user?user_id=${user_id}`;
 
-  return new Promise<Message[]>((resolve, reject) => {
+  return new Promise<IMessage[]>((resolve, reject) => {
     fetch(url).then((response) => {
       return response.json();
     }).then((json: any) => {
@@ -59,7 +59,7 @@ export const fetchUserMessages = (user_id: string): Promise<Message[]> => {
   });
 };
 
-export const postMessage = (content: string, longitude: number, latitude: number, userId: string): Promise<Message> => {
+export const postMessage = (content: string, longitude: number, latitude: number, userId: string): Promise<IMessage> => {
   const url = `https://klotter.ekdahl.io/post`;
   const data = {
     message: content,
@@ -68,7 +68,7 @@ export const postMessage = (content: string, longitude: number, latitude: number
     user_id: userId,
   };
 
-  return new Promise<Message>((resolve, reject) => {
+  return new Promise<IMessage>((resolve, reject) => {
     fetch(url, {
       method: "POST",
       body: JSON.stringify(data),
@@ -78,7 +78,7 @@ export const postMessage = (content: string, longitude: number, latitude: number
     }, (error) => {
       console.error(error.message);
     }).then((json: any) => {
-      const message: Message = {
+      const message: IMessage = {
         id: json.id,
         content: json.message,
         createdAt: moment(json.created_at),
@@ -92,7 +92,7 @@ export const postMessage = (content: string, longitude: number, latitude: number
   });
 };
 
-export const postComment = (content: string, messageId: number, userId: string): Promise<Comment> => {
+export const postComment = (content: string, messageId: number, userId: string): Promise<IComment> => {
   const url = `https://klotter.ekdahl.io/post_comment`;
   const data = {
     content: content,
@@ -100,7 +100,7 @@ export const postComment = (content: string, messageId: number, userId: string):
     user_id: userId,
   };
 
-  return new Promise<Comment>((resolve, reject) => {
+  return new Promise<IComment>((resolve, reject) => {
     fetch(url, {
       method: "POST",
       body: JSON.stringify(data),
@@ -109,7 +109,7 @@ export const postComment = (content: string, messageId: number, userId: string):
     }, (error) => {
       console.error(error.message);
     }).then((json: any) => {
-      const comment: Comment = {
+      const comment: IComment = {
         id: json.id,
         content: json.content,
         createdAt: moment(json.created_at),

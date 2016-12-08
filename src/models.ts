@@ -1,15 +1,15 @@
 import * as moment from "moment";
 
-export interface Message {
+export interface IMessage {
   id: number;
   content: string;
   createdAt: moment.Moment;
   latitude: number;
   longitude: number;
-  comments: Comment[];
+  comments: IComment[];
 }
 
-export interface Comment {
+export interface IComment {
   id: number;
   content: string;
   createdAt: moment.Moment;

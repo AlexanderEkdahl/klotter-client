@@ -1,16 +1,16 @@
 import * as React from "react";
 import haversine from "../haversine";
-import { Message } from "../models";
+import { IMessage } from "../models";
 import SingleMessage from "./SingleMessage";
 
-interface MessageListProps {
+interface IMessageListProps {
   latitude: number;
   longitude: number;
-  messages: Message[];
+  messages: IMessage[];
   messageView: (messageId: number) => void;
 }
 
-export default class MessageList extends React.Component<MessageListProps, {}> {
+export default class MessageList extends React.Component<IMessageListProps, {}> {
   render() {
     const messagesMarkup = this.props.messages.map((message, i) => {
       const distance = haversine(this.props.latitude, this.props.longitude, message.latitude, message.longitude);

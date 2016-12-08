@@ -1,15 +1,15 @@
 import * as React from "react";
 
-interface NewMessageProps {
+interface INewMessageProps {
   onSubmit: (value: string) => void;
   placeholder: string;
 }
 
-interface NewMessageState {
+interface INewMessageState {
   value: string;
 }
 
-export default class NewMessage extends React.Component<NewMessageProps, NewMessageState> {
+export default class NewMessage extends React.Component<INewMessageProps, INewMessageState> {
   constructor() {
     super();
 

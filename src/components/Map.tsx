@@ -1,6 +1,6 @@
 import * as React from "react";
 import haversine from "../haversine";
-import { Message } from "../models";
+import { IMessage } from "../models";
 import mapboxgl = require("mapbox-gl/dist/mapbox-gl.js");
 import { render, unmountComponentAtNode } from "react-dom";
 
@@ -12,14 +12,14 @@ const styleElement = document.createElement("style");
 styleElement.innerHTML = css;
 head.appendChild(styleElement);
 
-interface MapProps {
+interface IMapProps {
   latitude: number;
   longitude: number;
-  messages: Message[];
+  messages: IMessage[];
   messageView: (messageId: number) => void;
 }
 
-interface MapState {
+interface IMapState {
   latitude: number;
   longitude: number;
 }
@@ -54,11 +54,11 @@ function createGeoJSONCirclePolygon(longitude: number, latitude: number, km: num
   };
 };
 
-export default class MapComponent extends React.Component<MapProps, MapState> {
+export default class MapComponent extends React.Component<IMapProps, IMapState> {
   mapContainer: HTMLDivElement;
   map: mapboxgl.Map;
 
-  constructor(props: MapProps) {
+  constructor(props: IMapProps) {
     super();
     this.state = {
       latitude: props.latitude,

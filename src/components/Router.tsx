@@ -1,49 +1,60 @@
 import * as React from "react";
-import { Navigation, navigation, NotFound, url } from "../routes";
+import { INotFound, route, Routes, url } from "../routes";
 
-interface RouterState {
-  navigation: Navigation | NotFound;
+interface IRouterState {
+  route: Routes | INotFound;
 }
 
-export interface RouterProps {
-  navigation: Navigation | NotFound;
-  navigateTo: (navigation: Navigation) => void;
+export interface IRouterProps {
+  route: Routes | INotFound;
+  navigateTo: (route: Routes) => void;
 }
 
-export default function Router<T extends RouterProps>(Component: React.ComponentClass<T>): React.ComponentClass<Partial<T>> {
-  return class extends React.Component<T, RouterState> {
+export default function Router<T extends IRouterProps>(Component: React.ComponentClass<T>): React.ComponentClass<Partial<T>> {
+  return class extends React.Component<T, IRouterState> {
+    boundOnPopState: (event: PopStateEvent) => void;
+
     constructor() {
       super();
 
+      this.boundOnPopState = this.onPopState.bind(this);
       this.state = {
-        navigation: navigation(window.location.pathname),
+        route: route(window.location.pathname),
       };
+    }
+
+    onPopState(event: PopStateEvent) {
+      if (event.state !== null) { // should this use history.length instead?
+        this.setState({
+          route: event.state,
+        });
+      }
     }
 
     componentDidMount() {
-      window.onpopstate = (event) => {
-        if (event.state !== null) { // should this use history.length instead?
-          this.setState({
-            navigation: event.state,
-          });
-        }
-      };
+      window.addEventListener("popstate", this.boundOnPopState);
     }
 
-    navigateTo(navigation: Navigation) {
-      history.pushState(navigation, "", url(navigation));
+    componentWillUnmount() {
+      window.removeEventListener("popstate", this.boundOnPopState);
+    }
+
+    navigateTo(route: Routes) {
+      history.pushState(route, "", url(route));
 
       this.setState({
-        navigation: navigation,
+        route: route,
       });
     }
 
     render() {
-      return <Component
-        {...this.props}
-        navigation={this.state.navigation}
-        navigateTo={this.navigateTo.bind(this)}
-      />;
+      return (
+        <Component
+          {...this.props}
+          route={this.state.route}
+          navigateTo={this.navigateTo.bind(this)}
+        />
+      );
     }
   };
 }

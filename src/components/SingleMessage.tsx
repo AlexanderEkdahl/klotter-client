@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Message } from "../models";
+import { IMessage } from "../models";
 
-interface SingleMessageProps {
-  message: Message;
+interface ISingleMessageProps {
+  message: IMessage;
   distance: number;
 }
 
@@ -12,7 +12,7 @@ function messageColor(id: number): string {
   return messageColors[id % messageColors.length];
 }
 
-export default class SingleMessage extends React.Component<SingleMessageProps, {}> {
+export default class SingleMessage extends React.Component<ISingleMessageProps, {}> {
   render() {
     const message = this.props.message;
     const style = { ...styles.message, backgroundColor: messageColor(message.id) };

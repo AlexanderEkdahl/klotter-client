@@ -1,10 +1,10 @@
 import * as update from "immutability-helper";
 import * as React from "react";
 import { fetchMessages, fetchUserMessages, postComment, postMessage } from "../api";
-import { Message } from "../models";
+import { IMessage } from "../models";
 import watchPosition from "../watchPosition";
 import Main from "./Main";
-import Router, { RouterProps } from "./Router";
+import Router, { IRouterProps } from "./Router";
 
 const logo = require<string>("./logo.png");
 
@@ -15,11 +15,11 @@ const enum LocationStatus {
   Failed,
 }
 
-interface ApplicationState {
+interface IApplicationState {
   locationStatus: LocationStatus;
   position: Position | null;
-  messages: Message[];
-  userMessages: Message[];
+  messages: IMessage[];
+  userMessages: IMessage[];
   userId: string;
 }
 
@@ -40,7 +40,7 @@ function userId(): string {
   return id;
 }
 
-class Application extends React.Component<RouterProps, ApplicationState> {
+class Application extends React.Component<IRouterProps, IApplicationState> {
   watchID: number | null;
 
   constructor() {
@@ -128,7 +128,7 @@ class Application extends React.Component<RouterProps, ApplicationState> {
   }
 
   render() {
-    if (this.props.navigation.id === "404") {
+    if (this.props.route.id === "404") {
       return <span>404: Not found</span>;
     } else if (this.state.locationStatus === LocationStatus.Watching) {
       return (
@@ -137,7 +137,7 @@ class Application extends React.Component<RouterProps, ApplicationState> {
           navigateTo={this.props.navigateTo}
           onMessageSubmit={this.onMessageSubmit.bind(this)}
           onCommentSubmit={this.onCommentSubmit.bind(this)}
-          navigation={this.props.navigation}
+          route={this.props.route}
           messages={this.state.messages}
           userMessages={this.state.userMessages}
           longitude={this.state.position!.coords.longitude}
