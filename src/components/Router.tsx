@@ -12,12 +12,11 @@ export interface IRouterProps {
 
 export default function Router<T extends IRouterProps>(Component: React.ComponentClass<T>): React.ComponentClass<Partial<T>> {
   return class extends React.Component<T, IRouterState> {
-    boundOnPopState: (event: PopStateEvent) => void;
+    boundOnPopState = this.onPopState.bind(this);
 
     constructor() {
       super();
 
-      this.boundOnPopState = this.onPopState.bind(this);
       this.state = {
         route: route(window.location.pathname),
       };
