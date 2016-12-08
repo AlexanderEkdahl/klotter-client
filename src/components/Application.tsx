@@ -4,7 +4,8 @@ import * as moment from "moment";
 import * as update from "immutability-helper";
 import { Navigation, NotFound } from "../routes";
 import { Message, Comment } from "../models";
-import Router from "./Router";
+import { fetchMessages, fetchUserMessages, postMessage, postComment } from "../api";
+import Router, { RouterProps } from "./Router";
 import watchPosition from "../watchPosition";
 
 const logo = require<string>("./logo.png");
@@ -14,11 +15,6 @@ const enum LocationStatus {
   Watching,
   Unavailable,
   Failed,
-}
-
-interface ApplicationProps {
-  navigation: Navigation | NotFound;
-  navigateTo: (navigation: Navigation) => void;
 }
 
 interface ApplicationState {
@@ -45,7 +41,7 @@ function userId(): string {
   return id;
 }
 
-class Application extends React.Component<ApplicationProps, ApplicationState> {
+class Application extends React.Component<RouterProps, ApplicationState> {
   watchID: number;
 
   constructor() {
@@ -63,7 +59,7 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
   componentDidMount() {
     if ("geolocation" in navigator) {
       this.watchID = watchPosition((position) => {
-        Promise.all([this.fetchMessages(position), this.fetchUserMessages(this.state.userId)]).then((messages) => {
+        Promise.all([fetchMessages(position), fetchUserMessages(this.state.userId)]).then((messages) => {
           this.setState({
             locationStatus: LocationStatus.Watching,
             position: position,
@@ -86,100 +82,22 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
     }
   }
 
-  fetchMessages(position: Position): Promise<Message[]> {
-    const url = `https://klotter.ekdahl.io/get?x=${position.coords.longitude}&y=${position.coords.latitude}`;
-
-    return new Promise<Message[]>((resolve, reject) => {
-      fetch(url).then((response) => {
-        return response.json();
-      }).then((json: any) => {
-        const messages = json.map((message: any) => {
-          return {
-            id: message.id,
-            content: message.message,
-            createdAt: moment(message.created_at),
-            latitude: message.y,
-            longitude: message.x,
-            comments: message.Comments.map((comment: any) => {
-              return {
-                id: comment.id,
-                content: comment.content,
-                createdAt: moment(comment.created_at),
-              };
-            })
-          };
-        });
-
-        resolve(messages);
-      });
-    });
-  }
-
-  fetchUserMessages(user_id: string): Promise<Message[]> {
-    const url = `https://klotter.ekdahl.io/get_user?user_id=${user_id}`;
-
-    return new Promise<Message[]>((resolve, reject) => {
-      fetch(url).then((response) => {
-        return response.json();
-      }).then((json: any) => {
-        const messages = json.map((message: any) => {
-          return {
-            id: message.id,
-            content: message.message,
-            createdAt: moment(message.created_at),
-            latitude: message.y,
-            longitude: message.x,
-            comments: message.Comments.map((comment: any) => {
-              return {
-                id: comment.id,
-                content: comment.content,
-                createdAt: moment(comment.created_at),
-              };
-            })
-          };
-        });
-
-        resolve(messages);
-      });
-    });
-  }
-
   onMessageSubmit(value: string) {
-    const url = `https://klotter.ekdahl.io/post`;
-    const data = {
-      message: value,
-      x: this.state.position!.coords.longitude,
-      y: this.state.position!.coords.latitude,
-      user_id: this.state.userId,
-    };
+    postMessage(
+      value,
+      this.state.position!.coords.longitude,
+      this.state.position!.coords.latitude,
+      this.state.userId).then((message) => {
+        const newMessages = [message].concat(this.state.messages);
+        const newUserMessages = [message].concat(this.state.userMessages);
 
-    fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data)
-    }).then(function (response) {
-      // TODO: Error handling
-      return response.json();
-    }, function (error) {
-      console.log(error.message);
-    }).then((json: any) => {
-      const message: Message = {
-        id: json.id,
-        content: json.message,
-        createdAt: moment(json.created_at),
-        latitude: json.y,
-        longitude: json.x,
-        comments: [],
-      };
-      const newMessages = [message].concat(this.state.messages);
-      const newUserMessages = [message].concat(this.state.userMessages);
+        this.setState({
+          messages: newMessages,
+          userMessages: newUserMessages,
+        });
 
-      this.setState({
-        messages: newMessages,
-        userMessages: newUserMessages,
+        this.props.navigateTo({ id: "list" });
       });
-
-      this.props.navigateTo({ id: "list" });
-    });
   }
 
   onCommentSubmit(value: string, messageId: number) {
@@ -190,22 +108,10 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
       user_id: this.state.userId,
     };
 
-    fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data)
-    }).then(function (response) {
-      return response.json();
-    }, function (error) {
-      console.log(error.message);
-    }).then((json: any) => {
+    postComment(value, messageId, this.state.userId).then((comment) => {
       const messageIndex = this.state.messages.findIndex((x) => {
         return x.id === messageId;
       });
-      const comment: Comment = {
-        id: json.id,
-        content: json.content,
-        createdAt: moment(json.created_at),
-      };
       const newComments = this.state.messages[messageIndex].comments.concat([comment]);
       const command: any = {};
       command[messageIndex] = { comments: { $set: newComments } };

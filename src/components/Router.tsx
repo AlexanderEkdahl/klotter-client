@@ -5,37 +5,44 @@ interface RouterState {
   navigation: Navigation | NotFound;
 }
 
-export default (Component: any) => class extends React.Component<{}, RouterState> {
-  constructor() {
-    super();
+export interface RouterProps {
+  navigation: Navigation | NotFound;
+  navigateTo: (navigation: Navigation) => void;
+}
 
-    this.state = {
-      navigation: navigation(window.location.pathname),
-    };
-  }
+export default function Router<T extends RouterProps>(Component: React.ComponentClass<T>): React.ComponentClass<Partial<T>> {
+  return class extends React.Component<T, RouterState> {
+    constructor() {
+      super();
 
-  componentDidMount() {
-    window.onpopstate = (event) => {
-      if (event.state !== null) { // should this use history.length instead?
-        this.setState({
-          navigation: event.state,
-        });
-      }
-    };
-  }
+      this.state = {
+        navigation: navigation(window.location.pathname),
+      };
+    }
 
-  navigateTo(navigation: Navigation) {
-    history.pushState(navigation, "", url(navigation));
+    componentDidMount() {
+      window.onpopstate = (event) => {
+        if (event.state !== null) { // should this use history.length instead?
+          this.setState({
+            navigation: event.state,
+          });
+        }
+      };
+    }
 
-    this.setState({
-      navigation: navigation,
-    });
-  }
+    navigateTo(navigation: Navigation) {
+      history.pushState(navigation, "", url(navigation));
 
-  render() {
-    return <Component
-      {...this.props}
-      navigation={this.state.navigation}
-      navigateTo={this.navigateTo.bind(this)} />;
-  }
-};
+      this.setState({
+        navigation: navigation,
+      });
+    }
+
+    render() {
+      return <Component
+        {...this.props}
+        navigation={this.state.navigation}
+        navigateTo={this.navigateTo.bind(this)} />;
+    }
+  };
+}
