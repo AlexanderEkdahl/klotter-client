@@ -23,6 +23,7 @@ var configuration = {
             { test: /\.tsx?$/, loader: "ts-loader" },
             { test: /\.css$/, loader: "style-loader!css-loader" },
             { test: /\.(png|jpg)$/, loader: 'url-loader?limit=10000' },
+            { test: /\.svg$/, loader: 'svg-inline' },
         ],
 
         preLoaders: [
@@ -44,7 +45,7 @@ if (TARGET === 'dist') {
     );
     configuration.plugins.push(
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': '"production"'
+            'process.env.NODE_ENV': JSON.stringify('production'),
         })
     );
     configuration.plugins.push(

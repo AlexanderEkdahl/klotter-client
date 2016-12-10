@@ -6,7 +6,7 @@ import watchPosition from "../watchPosition";
 import Main from "./Main";
 import Router, { IRouterProps } from "./Router";
 
-const logo = require<string>("./logo.png");
+const logo = require<string>("../images/logo.png");
 
 const enum LocationStatus {
   Initializing,

@@ -10,7 +10,7 @@ export interface IRouterProps {
   navigateTo: (route: Routes) => void;
 }
 
-export default function Router<T extends IRouterProps>(Component: React.ComponentClass<T>): React.ComponentClass<Partial<T>> {
+export default function Router<T extends IRouterProps>(Component: React.ComponentClass<T>): React.ComponentClass<any> {
   return class extends React.Component<T, IRouterState> {
     boundOnPopState = this.onPopState.bind(this);
 

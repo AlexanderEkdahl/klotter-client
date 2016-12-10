@@ -7,3 +7,5 @@ declare var require: {
 declare module "mapbox-gl/dist/mapbox-gl.js" {
   export = mapboxgl;
 }
+
+declare module "svg-inline-react";

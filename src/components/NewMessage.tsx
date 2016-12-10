@@ -1,4 +1,5 @@
 import * as React from "react";
+import InlineSVG from "./InlineSVG";
 
 interface INewMessageProps {
   onSubmit: (value: string) => void;
@@ -33,10 +34,14 @@ export default class NewMessage extends React.Component<INewMessageProps, INewMe
   }
 
   render() {
+    const icon = require<string>("../images/plane.svg");
+
     return (
       <form onSubmit={this.handleSubmit.bind(this)} style={styles.form}>
         <input onChange={this.handleChange.bind(this)} style={styles.input} value={this.state.value} placeholder={this.props.placeholder} />
-        <input type="submit" style={styles.submit} />
+        <button type="submit" style={styles.submit}>
+          <InlineSVG src={icon} />
+        </button>
       </form>
     );
   }
@@ -53,13 +58,15 @@ const styles = {
     outline: "none",
     flexGrow: 1,
     padding: 5,
+    border: "none",
   },
 
   submit: {
-    fontSize: 20,
-    backgroundColor: "#FF00000",
     border: "none",
-    color: "white",
     outline: "none",
+    cursor: "pointer",
+    width: 50,
+    backgroundColor: "white",
+    margin: 6,
   },
 };

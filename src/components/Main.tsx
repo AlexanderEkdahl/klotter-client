@@ -71,13 +71,23 @@ export default class Main extends React.Component<IMainProps, {}> {
     return (
       <div>
         <Header navigateTo={this.props.navigateTo} route={this.props.route} />
-        <div style={{height: this.props.height - 90, overflow: "scroll"}}>
+        <div style={{...styles.middle, height: this.props.height - 100}}>
           {this.renderMain()}
         </div>
-        <div style={{height: 40}}>
+        <div style={styles.footer}>
           {this.renderFooter()}
         </div>
       </div>
     );
   }
 }
+
+const styles = {
+  middle: {
+    overflow: "scroll",
+  },
+
+  footer: {
+    height: 50,
+  },
+};
