@@ -36,6 +36,7 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.16.2",
+    "webpack-subresource-integrity": "^0.8.1",
     "whatwg-fetch": "^2.0.1"
   }
 }

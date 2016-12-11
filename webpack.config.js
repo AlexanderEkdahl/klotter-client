@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var SriPlugin = require('webpack-subresource-integrity');
 var Clean = require('clean-webpack-plugin');
 
 var TARGET = process.env.npm_lifecycle_event;
@@ -10,6 +11,7 @@ var configuration = {
         path: 'dist',
         filename: 'bundle-[hash].js',
         publicPath: '/',
+        crossOriginLoading: false,
     },
 
     devtool: "source-map",
@@ -53,6 +55,11 @@ if (TARGET === 'dist') {
             compress: {
                 warnings: false
             }
+        })
+    );
+    configuration.plugins.push(
+        new SriPlugin({
+            hashFuncNames: ['sha256', 'sha384'],
         })
     );
 }

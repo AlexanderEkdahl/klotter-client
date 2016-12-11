@@ -3621,7 +3621,7 @@ watchpack@^0.2.1:
     chokidar "^1.0.0"
     graceful-fs "^4.1.2"
 
-webpack-core@~0.6.0:
+webpack-core@^0.6.8, webpack-core@~0.6.0:
   version "0.6.8"
   resolved "https://registry.yarnpkg.com/webpack-core/-/webpack-core-0.6.8.tgz#edf9135de00a6a3c26dd0f14b208af0aa4af8d0a"
   dependencies:
@@ -3654,6 +3654,12 @@ webpack-dev-server@^1.16.2:
     strip-ansi "^3.0.0"
     supports-color "^3.1.1"
     webpack-dev-middleware "^1.4.0"
+
+webpack-subresource-integrity@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/webpack-subresource-integrity/-/webpack-subresource-integrity-0.8.1.tgz#51f290f5996ee94cd1f518198a9b421a17d2191e"
+  dependencies:
+    webpack-core "^0.6.8"
 
 webpack@^1.13.3:
   version "1.13.3"
